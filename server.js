@@ -1,8 +1,8 @@
 const express = require("express");
 const logger = require("./utils/logger");
-const morgan = require("./middlewares/morgan");
+const morgan = require("./middlewares/morgan.middleware");
 const db = require("./models/index");
-
+const userRouter = require("./routes/user.router")
 const app = express();
 
 const PORT = process.env.PORT || 7000;
@@ -14,6 +14,7 @@ app.listen(PORT, () => {
   logger.info(`Server is running at PORT:${PORT}`);
 });
 
+app.use("/users", userRouter)
 app.get("/", async (req, res) => {
   try {
     await db.sequelize.authenticate();
