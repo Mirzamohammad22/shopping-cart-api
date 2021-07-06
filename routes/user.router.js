@@ -6,9 +6,19 @@ const validateSchema = require("../middlewares/validators/schemas/schema-validat
 const errorHandler = require("../middlewares/error-handler.middleware");
 const urlIdSchema = require("../middlewares/validators/schemas/url-id.schema");
 
-
-router.post("/", userSchema.createUserSchema, validateSchema, userController.createUser);
-router.get("/:id", userController.getUser);
+router.post(
+  "/",
+  userSchema.createUserSchema,
+  validateSchema,
+  userController.createUser
+);
+router.post(
+  "/login",
+  userSchema.loginSchema,
+  validateSchema,
+  userController.loginUser
+);
+router.get("/:id", urlIdSchema, validateSchema, userController.getUser);
 router.patch(
   "/:id",
   urlIdSchema,
@@ -16,6 +26,7 @@ router.patch(
   validateSchema,
   userController.updateUser
 );
+
 router.use(errorHandler);
 
 module.exports = router;

@@ -85,4 +85,24 @@ const updateUserSchema = checkSchema({
   },
 });
 
-module.exports = { createUserSchema, updateUserSchema };
+const loginSchema = checkSchema ({
+  email: {
+    in: "body",
+    optional: false,
+    normalizeEmail: true,
+    trim: true,
+    toLowerCase: true,
+  },
+  password: {
+    optional: false,
+    in: "body",
+    exists: {
+      checkFalsy: true,
+    },
+    isString:{
+      errorMessage: "Password must be a string"
+    }
+  },
+})
+
+module.exports = { createUserSchema, updateUserSchema, loginSchema };

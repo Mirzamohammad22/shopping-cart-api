@@ -2,9 +2,13 @@ const logger = require("../utils/logger");
 const db = require("../models/index");
 const { UniqueConstraintError } = db.Sequelize;
 
+// TODO: For development purposes,remove default after env injection
+const jwtSecret = process.env.JWT_SECRET || "secretkey";
+
 class UserService {
-  constructor(model, passwordHasher) {
+  constructor(model, passwordHasher, jwt) {
     (this.userModel = model), (this.passwordHasher = passwordHasher);
+    this.jwt = jwt;
   }
 
   async hashPassword(password, saltRounds = 10) {
@@ -32,14 +36,14 @@ class UserService {
       if (!userToBeUpdated) {
         return undefined;
       }
-      console.log('USER!!!!',user)
+      logger.debug("USER!!!!", user);
       const updatedUser = await userToBeUpdated.update(user);
-      const result = await this.userModel.findAll()
-      logger.debug(result)
+      const result = await this.userModel.findAll();
+      logger.debug(result);
       logger.debug(updatedUser);
       return true;
     } catch (err) {
-        console.log(err)
+      logger.debug(err);
       throw err;
     }
   }
@@ -56,6 +60,36 @@ class UserService {
         };
       }
       return user;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async loginUser(email, password) {
+    try {
+      let token = undefined;
+      const user = await this.userModel.findOne({
+        where: {
+          email: email,
+        },
+      });
+      if (user) {
+        logger.debug("userFound:", user);
+        const password_valid = await this.passwordHasher.compare(
+          password,
+          user.password
+        );
+        logger.debug("PASSWORD VALID:", password_valid);
+        if (password_valid) {
+          token = await this.jwt.sign(
+            { id: user.id, email: user.email },
+            jwtSecret,
+            { expiresIn: 60 * 60 }
+          );
+        }
+        logger.debug("TOKEN:",token)
+      }
+      return token;
     } catch (err) {
       throw err;
     }
