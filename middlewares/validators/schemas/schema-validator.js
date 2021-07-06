@@ -9,6 +9,7 @@ async function validateSchema(req, res, next) {
 
   // Pruning out of any unexpected data, request should contain only expected data.
   req.body = matchedData(req, { includeOptionals: false, locations: ["body"] });
+  req.params = matchedData(req, { includeOptionals: false, locations: ["params"] });
 
   logger.debug(`ValidatedRequestBody:${JSON.stringify(req.body)}`);
   next();
