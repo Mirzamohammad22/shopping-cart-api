@@ -3,6 +3,7 @@ const logger = require("./utils/logger");
 const morgan = require("./middlewares/morgan.middleware");
 const db = require("./models/index");
 const userRouter = require("./routes/user.router")
+const itemRouter = require("./routes/item.router")
 const app = express();
 
 const PORT = process.env.PORT || 7000;
@@ -15,6 +16,7 @@ app.listen(PORT, () => {
 });
 
 app.use("/users", userRouter)
+app.use("/items", itemRouter)
 app.get("/", async (req, res) => {
   try {
     await db.sequelize.authenticate();
