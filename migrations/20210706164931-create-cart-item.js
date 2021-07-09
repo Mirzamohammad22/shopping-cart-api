@@ -1,18 +1,26 @@
 "use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("carts_items", {
+    await queryInterface.createTable("cartitems", {
       cartId: {
         type: Sequelize.INTEGER,
-        primaryKey: true,
         allowNull: false,
+        onDelete: "CASCADE",
+        references: {
+          model: "carts",
+          key: "id",
+        },
       },
       itemId: {
         type: Sequelize.INTEGER,
-        primaryKey: true,
         allowNull: false,
+        onDelete: "CASCADE",
+        references: {
+          model: "items",
+          key: "id",
+        },
       },
-      amount: {
+      quantity: {
         type: Sequelize.INTEGER,
       },
       createdAt: {
@@ -24,8 +32,14 @@ module.exports = {
         type: Sequelize.DATE,
       },
     });
+    await queryInterface.addConstraint("cartitems", {
+      fields: ["itemId", "cartId"],
+      type: "primary key",
+      name: "cartitem_pkey",
+    });
   },
+
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("carts_items");
+    await queryInterface.dropTable("cartitems");
   },
 };
