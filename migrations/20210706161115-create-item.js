@@ -10,18 +10,23 @@ module.exports = {
       },
       name: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       category: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       stock: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       price: {
         type: Sequelize.INTEGER,
+        allowNull: false,
       },
       sku: {
         type: Sequelize.INTEGER,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
@@ -32,7 +37,17 @@ module.exports = {
         type: Sequelize.DATE,
       },
     });
+    await queryInterface.addConstraint("items", {
+      fields: ["stock"],
+      type: "check",
+      where: {
+        stock: {
+          [Sequelize.Op.gte]: 0,
+        },
+      },
+    });
   },
+
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable("items");
   },
