@@ -47,7 +47,7 @@ class CartService {
     }
   }
 
-  async addItem(cartId, itemId, quantity = 1, transaction) {
+  async addItem(cartId, itemId, transaction, quantity = 1) {
     try {
       // Deduct requested quantity from item's stock
       const itemDecrement = await this.itemModel.decrement("stock", {
@@ -79,7 +79,7 @@ class CartService {
     }
   }
 
-  async updateItem(cartId, itemId, quantity, transaction) {
+  async updateItem(cartId, itemId, transaction, quantity) {
     try {
       // Get the cartItem
       const cartItem = await this.cartItemModel.findOne({

@@ -8,7 +8,6 @@ async function createCart(req, res, next) {
   try {
     // getting the user Id from jwt to associate the cart with
     const userId = req.authData.id;
-
     logger.debug(`Creating cart for userId:${userId}`);
     const cartId = await cartService.create(userId);
     return res.json({
@@ -44,7 +43,7 @@ async function addItemToCart(req, res, next) {
     logger.debug(
       `Adding itemId:${itemId} of Quantity:${quantity} to CartId:${cartId}`
     );
-    await cartService.addItem(cartId, itemId, quantity, transaction);
+    await cartService.addItem(cartId, itemId, transaction, quantity);
     return res.sendStatus(StatusCodes.OK);
   } catch (err) {
     next(err);
@@ -64,7 +63,7 @@ async function deleteItemFromCart(req, res, next) {
   }
 }
 
-async function editItemInCart(req, res, next) {
+async function updateItemInCart(req, res, next) {
   try {
     const cartId = req.params.cartId;
     const itemId = req.params.itemId;
@@ -73,7 +72,7 @@ async function editItemInCart(req, res, next) {
     logger.debug(
       `Updating itemId:${itemId} of quantity:${quantity} to CartId:${cartId}`
     );
-    await cartService.updateItem(cartId, itemId, quantity, transaction);
+    await cartService.updateItem(cartId, itemId, transaction, quantity);
     return res.sendStatus(StatusCodes.OK);
   } catch (err) {
     next(err);
@@ -84,6 +83,6 @@ module.exports = {
   createCart,
   addItemToCart,
   deleteItemFromCart,
-  editItemInCart,
+  updateItemInCart,
   listItemsInCart,
 };
