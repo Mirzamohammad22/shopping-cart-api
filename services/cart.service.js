@@ -1,5 +1,5 @@
 const logger = require("../utils/logger");
-const { ResourceNotFoundError, ItemError } = require("../utils/Errors/index");
+const { ResourceNotFoundError, ItemError } = require("../utils/errors/index");
 
 class CartService {
   constructor(cartModel, cartItemModel, itemModel) {

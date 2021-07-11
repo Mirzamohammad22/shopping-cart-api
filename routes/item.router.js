@@ -2,12 +2,12 @@ const { Router } = require("express");
 const router = Router();
 const errorHandler = require("../middlewares/error-handler.middleware");
 const itemController = require("../controllers/item.controller");
-const itemSchema = require("../middlewares/validators/schemas/item.schema");
+const itemValidationSchema = require("../middlewares/validators/schemas/item.schema");
 const validateSchema = require("../middlewares/validators/schemas/schema-validator");
 
 router.get(
   "/",
-  itemSchema.listSchema,
+  itemValidationSchema.listSchema,
   validateSchema,
   itemController.listItems
 );
