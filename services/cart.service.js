@@ -1,4 +1,6 @@
 const logger = require("../utils/logger");
+const { ResourceNotFoundError, ItemError } = require("../utils/Errors/index");
+
 class CartService {
   constructor(cartModel, cartItemModel, itemModel) {
     this.cartModel = cartModel;
@@ -6,49 +8,70 @@ class CartService {
     this.itemModel = itemModel;
   }
 
-  async create(userId) {
-    try {
-      const cartDetails = {
-        userId: userId,
-      };
-      const createdCart = await this.cartModel.create(cartDetails);
-      logger.info(`Created Cart:${JSON.stringify(createdCart)}`);
-      return createdCart.id;
-    } catch (err) {
-      throw err;
+  async _isItemStockAvailable(itemId, quantity) {
+    const item = await this.itemModel.findByPk(itemId);
+    // If found, check if stock is greater than required
+    if (item) {
+      const sufficient = item.stock >= quantity ? true : false;
+      if (!sufficient) {
+        throw new ItemError("Insufficient stock to meet quantity");
+      }
+    } else {
+      throw new ResourceNotFoundError("cart item");
+    }
+  }
+
+  async createCart(userId) {
+    const cartDetails = {
+      userId: userId,
+    };
+    const createdCart = await this.cartModel.create(cartDetails);
+    logger.info(`Created Cart:${JSON.stringify(createdCart)}`);
+    return createdCart.id;
+  }
+
+  async isCartOwner(cartId, userId) {
+    const cart = await this.cartModel.findByPk(cartId);
+    // If cart exits, check if given userId belongs to cart
+    if (cart) {
+      const isOwner = cart.userId === userId ? true : false;
+      return isOwner;
+    } else {
+      // No cart exists
+      throw new ResourceNotFoundError("cart");
     }
   }
 
   async listItems(cartId) {
-    try {
-      let items = undefined;
-      const cartItems = await this.cartItemModel.findAll({
-        where: {
-          cartId: cartId,
-        },
-        attributes: ["itemId", "quantity"],
-        include: this.itemModel,
-      });
+    let items = undefined;
+    const cartItems = await this.cartItemModel.findAll({
+      where: {
+        cartId: cartId,
+      },
+      attributes: ["itemId", "quantity"],
+      include: this.itemModel,
+    });
 
-      // If any items found, return formatted items
-      if (cartItems.length > 0) {
-        items = cartItems.map((cartItem) => {
-          return {
-            id: cartItem.dataValues.itemId,
-            name: cartItem.dataValues.Item.name,
-            quantity: cartItem.dataValues.quantity,
-          };
-        });
-      }
-      logger.debug(`cartId:${cartId}, items found:${JSON.stringify(items)}`);
-      return items;
-    } catch (err) {
-      throw err;
+    // If any items found, return formatted items
+    if (cartItems.length > 0) {
+      items = cartItems.map((cartItem) => {
+        return {
+          id: cartItem.dataValues.itemId,
+          name: cartItem.dataValues.Item.name,
+          quantity: cartItem.dataValues.quantity,
+        };
+      });
     }
+
+    logger.debug(`cartId:${cartId}, items found:${JSON.stringify(items)}`);
+    return items;
   }
 
   async addItem(cartId, itemId, transaction, quantity = 1) {
     try {
+      // Check if there is enough item stock
+      await this._isItemStockAvailable(itemId, quantity);
+
       // Deduct requested quantity from item's stock
       const itemDecrement = await this.itemModel.decrement("stock", {
         by: quantity,
@@ -60,17 +83,37 @@ class CartService {
 
       logger.debug(`items affected:${JSON.stringify(itemDecrement)}`);
 
-      // Created cart item relationship with requested quantity
-      const result = await this.cartItemModel.create(
-        {
+      // Get or create cart item relationship with requested quantity
+      const cartItem = await this.cartItemModel.findOrCreate({
+        where: {
           cartId: cartId,
           itemId: itemId,
+        },
+        defaults: {
           quantity: quantity,
         },
-        { transaction: transaction }
+        transaction: transaction,
+      });
+      logger.debug(
+        `cartItem: ${JSON.stringify(cartItem[0])} created:${cartItem[1]}`
       );
 
-      logger.info(`Created cartItem:${JSON.stringify(result)}`);
+      // cartItem found, not created.Incrementing quantity
+      if (!cartItem[1]) {
+        await this.cartItemModel.increment("quantity", {
+          by: quantity,
+          where: {
+            cartId: cartId,
+            itemId: itemId,
+          },
+          transaction: transaction,
+        });
+        logger.debug(`cartItem quantity incremented by ${quantity}`);
+      }
+
+      logger.info(
+        `CartItem with cartId:${cartId},itemId:${itemId} with quantity:${quantity} added successfully`
+      );
       await transaction.commit();
       return true;
     } catch (err) {
@@ -88,50 +131,63 @@ class CartService {
           itemId: itemId,
         },
       });
-      if (cartItem) {
-        // Calculating if stock should be increased or decreased
-        let quantityDifference = cartItem.quantity - quantity;
-        if (quantityDifference < 0) {
-          // Requested quantity is higher than current quantity, decreasing item stocks
-          quantityDifference = Math.abs(quantityDifference);
-          logger.debug(
-            `Decreasing stock by ${quantityDifference} for itemId:${itemId}`
-          );
-          const itemDecrement = await this.itemModel.decrement("stock", {
-            by: Math.abs(quantityDifference),
-            where: {
-              id: itemId,
-            },
-            transaction: transaction,
-          });
-          logger.debug(`Decrement result:${JSON.stringify(itemDecrement)}`);
-        }
-        if (quantityDifference > 0) {
-          // Requested quantity is lower than current quantity, increasing item stocks
-          logger.debug(
-            `Increasing stock by ${quantityDifference} for itemId:${itemId}`
-          );
-          const itemIncrement = await this.itemModel.increment("stock", {
-            by: quantityDifference,
-            where: {
-              id: itemId,
-            },
-            transaction: transaction,
-          });
-          logger.debug(`Increment result:${JSON.stringify(itemIncrement)}`);
-        }
-        const cartItemUpdated = await cartItem.update(
-          { quantity: quantity },
-          {
-            where: {
-              cartId: cartId,
-              itemId: itemId,
-            },
-            transaction: transaction,
-          }
-        );
-        logger.debug(`carItem updated:${JSON.stringify(cartItemUpdated)}`);
+
+      // No cartItem exists
+      if (!cartItem) {
+        throw new ResourceNotFoundError("cart item");
       }
+      // Calculating if stock should be increased or decreased
+      let quantityDifference = cartItem.quantity - quantity;
+
+      if (quantityDifference < 0) {
+        // Requested quantity is higher than current quantity, decreasing item stocks
+        quantityDifference = Math.abs(quantityDifference);
+
+        // Check if there is enough item stock
+        await this._isItemStockAvailable(itemId, quantityDifference);
+  
+        logger.debug(
+          `Decreasing stock by ${quantityDifference} for itemId:${itemId}`
+        );
+        const itemDecrement = await this.itemModel.decrement("stock", {
+          by: Math.abs(quantityDifference),
+          where: {
+            id: itemId,
+          },
+          transaction: transaction,
+        });
+        logger.debug(`Decrement result:${JSON.stringify(itemDecrement)}`);
+      }
+
+      if (quantityDifference > 0) {
+        // Requested quantity is lower than current quantity, increasing item stocks
+        logger.debug(
+          `Increasing stock by ${quantityDifference} for itemId:${itemId}`
+        );
+        const itemIncrement = await this.itemModel.increment("stock", {
+          by: quantityDifference,
+          where: {
+            id: itemId,
+          },
+          transaction: transaction,
+        });
+        logger.debug(`Increment result:${JSON.stringify(itemIncrement)}`);
+      }
+      const cartItemUpdated = await cartItem.update(
+        { quantity: quantity },
+        {
+          where: {
+            cartId: cartId,
+            itemId: itemId,
+          },
+          transaction: transaction,
+        }
+      );
+      logger.debug(`carItem updated:${JSON.stringify(cartItemUpdated)}`);
+
+      logger.info(
+        `CartItem with cartId:${cartId},itemId:${itemId} with quantity:${quantity} updated successfully`
+      );
       await transaction.commit();
       return true;
     } catch (err) {
@@ -142,12 +198,15 @@ class CartService {
 
   async deleteItem(cartId, itemId, transaction) {
     try {
+      // get cartItem
       const cartItem = await this.cartItemModel.findOne({
         where: {
           cartId: cartId,
           itemId: itemId,
         },
       });
+
+      // if found, add the quantity back to item stock
       if (cartItem) {
         const itemIncrement = await this.itemModel.increment("stock", {
           by: cartItem.quantity,
@@ -157,11 +216,13 @@ class CartService {
           transaction: transaction,
         });
         logger.debug(`item Incremented:${JSON.stringify(itemIncrement)}`);
+
         await cartItem.destroy({ transaction: transaction });
         logger.info(
           `CartItem with cartId:${cartId},itemId:${itemId} deleted successfully`
         );
       }
+
       logger.info(
         `CartItem with cartId:${cartId},itemId:${itemId} delete complete`
       );
