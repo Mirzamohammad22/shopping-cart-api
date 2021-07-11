@@ -34,6 +34,17 @@ class UnAuthorizedUser extends BaseError {
     this.name = this.constructor.name;
   }
 }
+class InputValidationError extends BaseError {
+  constructor(
+    message,
+    details = undefined,
+    statusCode = StatusCodes.BAD_REQUEST
+  ) {
+    super(message, statusCode);
+    this.name = this.constructor.name;
+    this.details = details;
+  }
+}
 
 module.exports = {
   ResourceNotFoundError: ResourceNotFoundError,
@@ -41,4 +52,5 @@ module.exports = {
   ItemError: ItemError,
   CartError: CartError,
   UnAuthorizedUser: UnAuthorizedUser,
+  InputValidationError: InputValidationError,
 };

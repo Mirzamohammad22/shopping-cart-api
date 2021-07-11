@@ -1,11 +1,12 @@
 const { validationResult, matchedData } = require("express-validator");
+const {InputValidationError} = require("../../../utils/errors/index")
 const logger = require("../../../utils/logger");
 
 function validateSchema(req, res, next) {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      throw new InputValidationError("Invalid input",errors.array())
     }
 
     // get cleaned request data
@@ -60,13 +61,13 @@ function validateSchema(req, res, next) {
     ) {
       const errorObject = {
         message: "Unexpected Keys passed in the Request",
-        error: {
+        locations: {
           ...(extraBodyKeys.length > 0 ? { body: extraBodyKeys } : undefined),
           ...(extraParamKeys.length > 0 ? { params: extraParamKeys } : undefined),
           ...(extraQueryKeys.length > 0 ? { query: extraQueryKeys } : undefined),
         },
       };
-      return res.status(400).json(errorObject);
+      throw new InputValidationError(errorObject.message,errorObject.locations);
     }
 
     // replacing request with cleaned and sanitized data.
