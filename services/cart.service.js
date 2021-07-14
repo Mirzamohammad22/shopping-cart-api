@@ -17,7 +17,7 @@ class CartService {
         throw new ItemError("Insufficient stock to meet quantity");
       }
     } else {
-      throw new ResourceNotFoundError("cart item");
+      throw new ResourceNotFoundError("Item");
     }
   }
 
@@ -30,15 +30,15 @@ class CartService {
     return createdCart.id;
   }
 
-  async isCartOwner(cartId, userId) {
-    const cart = await this.cartModel.findByPk(cartId);
-    // If cart exits, check if given userId belongs to cart
-    if (cart) {
-      const isOwner = cart.userId === userId ? true : false;
-      return isOwner;
+  async getallUserCartIds(userId) {
+    let carts = await this.cartModel.findAll({ where: { userId: userId } });
+
+    if (carts.length > 0) {
+      const result = carts.map((cart) => cart.dataValues.id);
+      return result;
     } else {
       // No cart exists
-      throw new ResourceNotFoundError("cart");
+      throw new ResourceNotFoundError("Cart");
     }
   }
 
@@ -134,7 +134,7 @@ class CartService {
 
       // No cartItem exists
       if (!cartItem) {
-        throw new ResourceNotFoundError("cart item");
+        throw new ResourceNotFoundError("Cart Item");
       }
       // Calculating if stock should be increased or decreased
       let quantityDifference = cartItem.quantity - quantity;
@@ -145,7 +145,7 @@ class CartService {
 
         // Check if there is enough item stock
         await this._isItemStockAvailable(itemId, quantityDifference);
-  
+
         logger.debug(
           `Decreasing stock by ${quantityDifference} for itemId:${itemId}`
         );

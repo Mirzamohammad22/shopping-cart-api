@@ -3,26 +3,42 @@ const db = require("../models/index");
 const { StatusCodes } = require("http-status-codes");
 const {
   ResourceNotFoundError,
-  UnAuthorizedUser,
-} = require("../utils/Errors/index");
+  UnAuthorizedUserError,
+} = require("../utils/errors/index");
 const CartService = require("../services/cart.service");
-
+const jsonCache = require("../utils/cache");
 const cartService = new CartService(db.Cart, db.CartItem, db.Item);
+const DAY_IN_SECONDS = 60 * 60 * 24;
 
 async function isCartOwner(cartId, userId) {
   try {
-    const isCartOwner = await cartService.isCartOwner(cartId, userId);
-    if (!isCartOwner) {
-      throw new UnAuthorizedUser("FORBIDDEN");
+    // get carts from redis cache
+    const cacheKey = `userId:${userId}`;
+    let userCarts = await jsonCache.get(cacheKey);
+
+    // cache-miss, query db and set cache
+    if (!userCarts) {
+      const userCartsArray = await cartService.allUserCarts(userId);
+      userCarts = userCartsArray.reduce(
+        (acc, cart) => ((acc[cart] = true), acc),
+        {}
+      );
+      await jsonCache.set(cacheKey, userCarts, { expire: DAY_IN_SECONDS });
     }
-    return isCartOwner;
+
+    // verify cart belongs to user
+    if (userCarts[cartId] !== true) {
+      throw new UnAuthorizedUserError("FORBIDDEN", StatusCodes.FORBIDDEN);
+    }
+
+    return true;
   } catch (err) {
     /**
      * If cart does not exist, we dont want user to know this.
-     * They could possibly keep hitting to identify which carts exist.
+     * They could possibly keep hitting the api to identify which carts exist.
      */
     if (err instanceof ResourceNotFoundError) {
-      throw new UnAuthorizedUser("FORBIDDEN");
+      throw new UnAuthorizedUserError("FORBIDDEN");
     } else {
       throw err;
     }
@@ -33,8 +49,12 @@ async function createCart(req, res, next) {
   try {
     // Getting the user Id from jwt to associate the cart with
     const userId = req.authData.id;
+    const cacheKey = `userId:${userId}`;
+    const cacheObject = {};
     logger.info(`Creating cart for userId:${userId}`);
     const cartId = await cartService.createCart(userId);
+    // clearing cache
+    await jsonCache.del(cacheKey);
     return res.json({
       id: cartId,
     });

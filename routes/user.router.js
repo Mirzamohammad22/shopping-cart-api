@@ -5,7 +5,8 @@ const userValidationSchema = require("../middlewares/validators/schemas/user.sch
 const validateSchema = require("../middlewares/validators/schemas/schema-validator");
 const errorHandler = require("../middlewares/error-handler.middleware");
 const urlIdSchema = require("../middlewares/validators/schemas/url-id.schema");
-
+const cacheMiddleware = require("../middlewares/cache.middleware");
+const authenticateJwt = require("../middlewares/jwt.middleware");
 router.post(
   "/",
   userValidationSchema.createUserSchema,
@@ -18,11 +19,19 @@ router.post(
   validateSchema,
   userController.loginUser
 );
-router.get("/:id", urlIdSchema, validateSchema, userController.getUser);
+router.get(
+  "/:id",
+  urlIdSchema,
+  validateSchema,
+  authenticateJwt,
+  cacheMiddleware,
+  userController.getUser
+);
 router.patch(
   "/:id",
   urlIdSchema,
   userValidationSchema.updateUserSchema,
+  authenticateJwt,
   validateSchema,
   userController.updateUser
 );
