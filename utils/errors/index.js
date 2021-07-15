@@ -28,12 +28,30 @@ class CartError extends BaseError {
   }
 }
 
-class UnAuthorizedUser extends BaseError {
+class UserError extends BaseError {
+  constructor(message , statusCode = StatusCodes.BAD_REQUEST) {
+    super(message, statusCode);
+    this.name = this.constructor.name;
+  }
+}
+
+class UnAuthorizedUserError extends BaseError {
   constructor(message = "FORBIDDEN", statusCode = StatusCodes.FORBIDDEN) {
     super(message, statusCode);
     this.name = this.constructor.name;
   }
 }
+class LoginError extends BaseError {
+  constructor(
+    message,
+    statusCode = StatusCodes.UNAUTHORIZED
+  ) {
+    super(message, statusCode);
+    this.name = this.constructor.name;
+    this.details = details;
+  }
+}
+
 class InputValidationError extends BaseError {
   constructor(
     message,
@@ -51,6 +69,8 @@ module.exports = {
   BaseError: BaseError,
   ItemError: ItemError,
   CartError: CartError,
-  UnAuthorizedUser: UnAuthorizedUser,
+  UserError: UserError,
+  LoginError: LoginError,
+  UnAuthorizedUserError: UnAuthorizedUserError,
   InputValidationError: InputValidationError,
 };
