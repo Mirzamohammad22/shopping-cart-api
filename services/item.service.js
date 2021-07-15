@@ -1,4 +1,5 @@
 const logger = require("../utils/logger");
+const { ResourceNotFoundError } = require("../utils/errors/index");
 
 class ItemService {
   constructor(itemModel) {
@@ -6,26 +7,21 @@ class ItemService {
   }
 
   async listItems(filter) {
-    try {
-      let items = undefined;
-      const attributesToExclude = ["createdAt", "updatedAt"];
-      logger.info(`Getting items with filters:${JSON.stringify(filter)}`);
-      const result = await this.itemModel.findAll({
-        where: filter,
-        attributes: {
-          exclude: attributesToExclude,
-        },
-      });
+    const attributesToExclude = ["createdAt", "updatedAt"];
+    logger.info(`Getting items with filters:${JSON.stringify(filter)}`);
+    const result = await this.itemModel.findAll({
+      where: filter,
+      attributes: {
+        exclude: attributesToExclude,
+      },
+    });
 
-      logger.info(`Items Found:${result.length}`);
-      if (result.length > 0) {
-        items = result.map((item) => item.dataValues);
-      }
-
-      console.log(items);
+    logger.info(`Items Found:${result.length}`);
+    if (result.length > 0) {
+      const items = result.map((item) => item.dataValues);
       return items;
-    } catch (err) {
-      throw err;
+    } else {
+      throw ResourceNotFoundError("Items");
     }
   }
 }
