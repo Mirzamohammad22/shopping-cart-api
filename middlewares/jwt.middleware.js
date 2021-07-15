@@ -1,14 +1,13 @@
 const jwt = require("jsonwebtoken");
 const logger = require("../utils/logger");
-const { UnAuthorizedUser } = require("../utils/errors/index");
-// TODO: For development purposes,remove default after env injection
-const jwtSecret = process.env.JWT_SECRET || "secretkey";
+const { UnAuthorizedUserError } = require("../utils/errors/index");
+const jwtSecret = process.env.JWT_SECRET;
 
 async function authenticateJwt(req, res, next) {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-      throw new UnAuthorizedUser("UNAUTHORIZED", 401);
+      throw new UnAuthorizedUserError("UNAUTHORIZED", 401);
     }
 
     const token = authHeader.split(" ")[1];

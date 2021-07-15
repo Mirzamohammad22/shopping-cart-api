@@ -1,9 +1,14 @@
 const logger = require("../utils/logger");
-const db = require("../models/index");
-const { UniqueConstraintError } = db.Sequelize;
 
-// TODO: For development purposes,remove default after env injection
-const jwtSecret = process.env.JWT_SECRET || "secretkey";
+const {
+  UserError,
+  ResourceNotFoundError,
+  LoginError,
+} = require("../utils/errors/index");
+const { UniqueConstraintError } = require("sequelize");
+const constants = require("../utils/constants");
+
+const jwtSecret = process.env.JWT_SECRET;
 
 class UserService {
   constructor(model, passwordHasher, jwt) {
@@ -15,42 +20,48 @@ class UserService {
     return await this.passwordHasher.hash(password, saltRounds);
   }
 
-  async createUser(user) {
-    try {
-      const createdUser = await this.userModel.create(user);
-      return createdUser.id;
-    } catch (err) {
-      if (err instanceof UniqueConstraintError) {
-        return undefined;
-      } else {
-        throw err;
-      }
+  async createUser(email, password, firstName, lastName = undefined) {
+    const [user, created] = await this.userModel.findOrCreate({
+      where: {
+        email: email,
+      },
+      defaults: {
+        password: password,
+        firstName: firstName,
+        lastName: lastName,
+      },
+    });
+    if (!created) {
+      throw new UserError("Email already registered");
     }
+    logger.debug(`User created:${JSON.stringify(user)}`);
+    logger.info(`Created User with email:${user.email} Successfully`);
+    return user.id;
   }
 
-  async updateUser(id, user) {
+  async updateUser(id, details) {
     try {
       const userToBeUpdated = await this.userModel.findByPk(id);
 
-      // No user exists for given
+      // No user exists for given id
       if (!userToBeUpdated) {
-        return undefined;
+        throw new ResourceNotFoundError("User");
       }
-      logger.debug("USER!!!!", user);
-      const updatedUser = await userToBeUpdated.update(user);
-      const result = await this.userModel.findAll();
-      logger.debug(result);
+      const updatedUser = await userToBeUpdated.update(details);
       logger.debug(updatedUser);
+      logger.info(`Updated User with id:${id} successfully`);
       return true;
     } catch (err) {
-      logger.debug(err);
+      if (err instanceof UniqueConstraintError) {
+        throw new UserError("Email already registered");
+      }
       throw err;
     }
   }
 
-  async getUser(filter) {
+  async getUser(userId) {
     try {
-      const result = await this.userModel.findOne({ where: filter });
+      const result = await this.userModel.findByPk(userId);
       let user = undefined;
       if (result) {
         user = {
@@ -58,6 +69,8 @@ class UserService {
           firstName: result.firstName,
           lastName: result.LastName,
         };
+      } else {
+        throw new ResourceNotFoundError("User");
       }
       return user;
     } catch (err) {
@@ -66,33 +79,33 @@ class UserService {
   }
 
   async loginUser(email, password) {
-    try {
-      let token = undefined;
-      const user = await this.userModel.findOne({
-        where: {
-          email: email,
-        },
-      });
-      if (user) {
-        logger.debug("userFound:", user);
-        const password_valid = await this.passwordHasher.compare(
-          password,
-          user.password
-        );
-        logger.debug("PASSWORD VALID:", password_valid);
-        if (password_valid) {
-          token = await this.jwt.sign(
-            { id: user.id, email: user.email },
-            jwtSecret,
-            { expiresIn: 60 * 60 }
-          );
-        }
-        logger.debug("TOKEN:",token)
+    const user = await this.userModel.findOne({
+      where: {
+        email: email,
+      },
+    });
+    if (user) {
+      logger.debug("userFound:", user);
+      const password_valid = await this.passwordHasher.compare(
+        password,
+        user.password
+      );
+      logger.debug("PASSWORD VALID:", password_valid);
+      if (!password_valid) {
+        throw new LoginError("Invalid credentials");
       }
-      return token;
-    } catch (err) {
-      throw err;
+    } else {
+      throw new LoginError("Email not registered");
     }
+
+    const token = await this.jwt.sign(
+      { id: user.id, email: user.email },
+      jwtSecret,
+      { expiresIn: constants.DAY_IN_SECONDS }
+    );
+
+    logger.debug("TOKEN:", token);
+    return token;
   }
 }
 
