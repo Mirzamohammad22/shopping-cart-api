@@ -48,7 +48,6 @@ class LoginError extends BaseError {
   ) {
     super(message, statusCode);
     this.name = this.constructor.name;
-    this.details = details;
   }
 }
 

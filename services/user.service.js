@@ -11,8 +11,9 @@ const constants = require("../utils/constants");
 const jwtSecret = process.env.JWT_SECRET;
 
 class UserService {
-  constructor(model, passwordHasher, jwt) {
-    (this.userModel = model), (this.passwordHasher = passwordHasher);
+  constructor(userModel, passwordHasher, jwt) {
+    this.userModel = userModel;
+    this.passwordHasher = passwordHasher;
     this.jwt = jwt;
   }
 
@@ -62,16 +63,15 @@ class UserService {
   async getUser(userId) {
     try {
       const result = await this.userModel.findByPk(userId);
-      let user = undefined;
-      if (result) {
-        user = {
-          email: result.email,
-          firstName: result.firstName,
-          lastName: result.LastName,
-        };
-      } else {
+
+      if (!result) {
         throw new ResourceNotFoundError("User");
       }
+      const user = {
+        email: result.email,
+        firstName: result.firstName,
+        lastName: result.LastName,
+      };
       return user;
     } catch (err) {
       throw err;
@@ -84,20 +84,18 @@ class UserService {
         email: email,
       },
     });
-    if (user) {
-      logger.debug("userFound:", user);
-      const password_valid = await this.passwordHasher.compare(
-        password,
-        user.password
-      );
-      logger.debug("PASSWORD VALID:", password_valid);
-      if (!password_valid) {
-        throw new LoginError("Invalid credentials");
-      }
-    } else {
+    if (!user) {
       throw new LoginError("Email not registered");
     }
-
+    logger.debug("userFound:", user);
+    const password_valid = await this.passwordHasher.compare(
+      password,
+      user.password
+    );
+    logger.debug("PASSWORD VALID:", password_valid);
+    if (!password_valid) {
+      throw new LoginError("Invalid credentials");
+    }
     const token = await this.jwt.sign(
       { id: user.id, email: user.email },
       jwtSecret,

@@ -11,14 +11,14 @@ class CartService {
   async _isItemStockAvailable(itemId, quantity) {
     const item = await this.itemModel.findByPk(itemId);
     // If found, check if stock is greater than required
-    if (item) {
-      const sufficient = item.stock >= quantity ? true : false;
-      if (!sufficient) {
-        throw new ItemError("Insufficient stock to meet quantity");
-      }
-    } else {
+    if (!item) {
       throw new ResourceNotFoundError("Item");
     }
+    const sufficient = item.stock >= quantity ? true : false;
+    if (!sufficient) {
+      throw new ItemError("Insufficient stock to meet quantity");
+    }
+    return sufficient;
   }
 
   async listUserCartIds(userId) {

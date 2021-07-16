@@ -98,8 +98,17 @@ async function listUserCarts(req, res, next) {
     const requestUserId = req.params.id;
     const authUserId = req.authData.id;
     isAuthorized(requestUserId, authUserId);
+
     const carts = await cartService.listUserCarts(requestUserId);
-    res.json({ carts });
+    const responseData = {
+      data: {
+        carts: carts,
+      },
+    };
+    await jsonCache.set(req.originalUrl, responseData, {
+      expire: constants.DAY_IN_SECONDS,
+    });
+    res.json(responseData);
   } catch (err) {
     next(err);
   }
