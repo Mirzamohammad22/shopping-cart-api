@@ -1,4 +1,4 @@
-const {jsonCache} = require("../utils/cache")
+const jsonCache = require("../utils/cache")
 const {StatusCodes} = require('http-status-codes')
 
 async function cacheMiddleware(req,res,next){
