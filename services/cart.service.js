@@ -21,6 +21,12 @@ class CartService {
     }
   }
 
+  async listUserCartIds(userId) {
+    const userCarts = await this.listUserCarts(userId);
+    const userCartIds = userCarts.map((cart) => cart.dataValues.id);
+    return userCartIds;
+  }
+
   async createCart(userId) {
     const cartDetails = {
       userId: userId,
@@ -30,16 +36,16 @@ class CartService {
     return createdCart.id;
   }
 
-  async getallUserCartIds(userId) {
-    let carts = await this.cartModel.findAll({ where: { userId: userId } });
+  async listUserCarts(userId) {
+    const userCarts = await this.cartModel.findAll({
+      where: { userId: userId },
+      attributes: { exclude: ["userId"] },
+    });
 
-    if (carts.length > 0) {
-      const result = carts.map((cart) => cart.dataValues.id);
-      return result;
-    } else {
-      // No cart exists
+    if (userCarts.length === 0) {
       throw new ResourceNotFoundError("Cart");
     }
+    return userCarts;
   }
 
   async listItems(cartId) {

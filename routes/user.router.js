@@ -4,7 +4,7 @@ const userController = require("../controllers/user.controller");
 const userValidationSchema = require("../middlewares/validators/schemas/user.schema.js");
 const validateSchema = require("../middlewares/validators/schemas/schema-validator");
 const errorHandler = require("../middlewares/error-handler.middleware");
-const urlIdSchema = require("../middlewares/validators/schemas/url-id.schema");
+const defaultValidationSchema = require("../middlewares/validators/schemas/default.schema");
 const cacheMiddleware = require("../middlewares/cache.middleware");
 const authenticateJwt = require("../middlewares/jwt.middleware");
 router.post(
@@ -21,7 +21,7 @@ router.post(
 );
 router.get(
   "/:id",
-  urlIdSchema,
+  defaultValidationSchema.urlIdSchema,
   validateSchema,
   authenticateJwt,
   cacheMiddleware,
@@ -29,11 +29,19 @@ router.get(
 );
 router.patch(
   "/:id",
-  urlIdSchema,
+  defaultValidationSchema.urlIdSchema,
   userValidationSchema.updateUserSchema,
-  authenticateJwt,
   validateSchema,
+  authenticateJwt,
   userController.updateUser
+);
+
+router.get(
+  "/:id/carts",
+  defaultValidationSchema.urlIdSchema,
+  validateSchema,
+  authenticateJwt,
+  userController.listUserCarts
 );
 
 router.use(errorHandler);

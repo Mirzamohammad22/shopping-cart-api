@@ -7,8 +7,8 @@ const {
 } = require("../utils/errors/index");
 const CartService = require("../services/cart.service");
 const jsonCache = require("../utils/cache");
+const constants = require("../utils/constants")
 const cartService = new CartService(db.Cart, db.CartItem, db.Item);
-const DAY_IN_SECONDS = 60 * 60 * 24;
 
 async function isCartOwner(cartId, userId) {
   try {
@@ -18,12 +18,12 @@ async function isCartOwner(cartId, userId) {
 
     // cache-miss, query db and set cache
     if (!userCarts) {
-      const userCartsArray = await cartService.allUserCarts(userId);
+      const userCartsArray = await cartService.listUserCartIds(userId);
       userCarts = userCartsArray.reduce(
         (acc, cart) => ((acc[cart] = true), acc),
         {}
       );
-      await jsonCache.set(cacheKey, userCarts, { expire: DAY_IN_SECONDS });
+      await jsonCache.set(cacheKey, userCarts, { expire: constants.DAY_IN_SECONDS });
     }
 
     // verify cart belongs to user

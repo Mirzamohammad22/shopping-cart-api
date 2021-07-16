@@ -5,9 +5,12 @@ const bcrypt = require("bcrypt");
 const { StatusCodes } = require("http-status-codes");
 const jwt = require("jsonwebtoken");
 const jsonCache = require("../utils/cache");
-const userService = new UserService(db.User, bcrypt, jwt);
 const { UnAuthorizedUserError } = require("../utils/errors/index");
 const constants = require("../utils/constants");
+const CartService = require("../services/cart.service");
+
+const cartService = new CartService(db.Cart, db.CartItem, db.Item);
+const userService = new UserService(db.User, bcrypt, jwt);
 
 function isAuthorized(requestUserId, authUserId) {
   // check if the userId in jwt matches req user
@@ -83,7 +86,6 @@ async function loginUser(req, res, next) {
   try {
     const { email, password } = req.body;
     const jwt = await userService.loginUser(email, password);
-    
     res.json({
       token: jwt,
     });
@@ -91,10 +93,21 @@ async function loginUser(req, res, next) {
     next(err);
   }
 }
-
+async function listUserCarts(req, res, next) {
+  try {
+    const requestUserId = req.params.id;
+    const authUserId = req.authData.id;
+    isAuthorized(requestUserId, authUserId);
+    const carts = await cartService.listUserCarts(requestUserId);
+    res.json({ carts });
+  } catch (err) {
+    next(err);
+  }
+}
 module.exports = {
   createUser,
   getUser,
   updateUser,
   loginUser,
+  listUserCarts,
 };
