@@ -4,9 +4,10 @@ const errorHandler = require("../middlewares/error-handler.middleware");
 const itemController = require("../controllers/item.controller");
 const itemValidationSchema = require("../middlewares/validators/schemas/item.schema");
 const validateSchema = require("../middlewares/validators/schemas/schema-validator");
-
+const defaultSchema = require("../middlewares/validators/schemas/default.schema")
 router.get(
   "/",
+  defaultSchema.paginationSchema,
   itemValidationSchema.listSchema,
   validateSchema,
   itemController.listItems
