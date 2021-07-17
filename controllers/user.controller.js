@@ -55,11 +55,11 @@ async function updateUser(req, res, next) {
         10
       );
     }
-    await userService.updateUser(userId, userDetails);
+    await userService.updateUser(requestUserId, userDetails);
 
     // delete cache for GET requests
     await jsonCache.del(req.originalUrl);
-    res.sendStatus(204);
+    res.sendStatus(200);
   } catch (err) {
     next(err);
   }

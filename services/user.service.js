@@ -32,6 +32,7 @@ class UserService {
         lastName: lastName,
       },
     });
+
     if (!created) {
       throw new UserError("Email already registered");
     }
@@ -49,6 +50,7 @@ class UserService {
         throw new ResourceNotFoundError("User");
       }
       const updatedUser = await userToBeUpdated.update(details);
+
       logger.debug(updatedUser);
       logger.info(`Updated User with id:${id} successfully`);
       return true;
@@ -61,21 +63,16 @@ class UserService {
   }
 
   async getUser(userId) {
-    try {
-      const result = await this.userModel.findByPk(userId);
-
-      if (!result) {
-        throw new ResourceNotFoundError("User");
-      }
-      const user = {
-        email: result.email,
-        firstName: result.firstName,
-        lastName: result.LastName,
-      };
-      return user;
-    } catch (err) {
-      throw err;
+    const result = await this.userModel.findByPk(userId);
+    if (!result) {
+      throw new ResourceNotFoundError("User");
     }
+    const user = {
+      email: result.email,
+      firstName: result.firstName,
+      lastName: result.lastName,
+    };
+    return user;
   }
 
   async loginUser(email, password) {
