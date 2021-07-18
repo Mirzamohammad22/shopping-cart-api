@@ -8,7 +8,7 @@ const itemService = new ItemService(db.Item);
 async function listItems(req, res, next) {
   try {
     const category = req.query.category;
-    const page = req.query.page ? req.query.page : 0;
+    const page = req.query.page ? req.query.page : 1;
     const size = req.query.size ? req.query.size : 5;
     const { offset, limit } = pagination.getPagination(page, size);
 

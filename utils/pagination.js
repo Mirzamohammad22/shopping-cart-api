@@ -1,5 +1,5 @@
 const getPagination = (page, size) => {
-  return { offset: page * size, limit: size };
+  return { offset: (page - 1) * size, limit: size };
 };
 
 const getPaginatedDataFormat = (data, page, limit) => {
