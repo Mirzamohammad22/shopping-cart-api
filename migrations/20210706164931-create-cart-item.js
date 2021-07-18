@@ -1,7 +1,7 @@
 "use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("cartitems", {
+    await queryInterface.createTable("CartItems", {
       cartId: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -32,14 +32,23 @@ module.exports = {
         type: Sequelize.DATE,
       },
     });
-    await queryInterface.addConstraint("cartitems", {
+    await queryInterface.addConstraint("CartItems", {
       fields: ["itemId", "cartId"],
       type: "primary key",
       name: "cartitem_pkey",
     });
+    await queryInterface.addConstraint("CartItems", {
+      fields: ["quantity"],
+      type: "check",
+      where: {
+        stock: {
+          [Sequelize.Op.gte]: 1,
+        },
+      },
+    });
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("cartitems");
+    await queryInterface.dropTable("CartItems");
   },
 };
