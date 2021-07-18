@@ -31,6 +31,7 @@ class CartService {
     const cartDetails = {
       userId: userId,
     };
+    
     const createdCart = await this.cartModel.create(cartDetails);
     logger.info(`Created Cart:${JSON.stringify(createdCart)}`);
     return createdCart.id;
@@ -42,6 +43,7 @@ class CartService {
       attributes: { exclude: ["userId"] },
     });
 
+    logger.debug(`User id:${userId}, carts:${JSON.stringify(userCarts)}`)
     if (userCarts.length === 0) {
       throw new ResourceNotFoundError("Cart");
     }
@@ -90,7 +92,7 @@ class CartService {
       logger.debug(`items affected:${JSON.stringify(itemDecrement)}`);
 
       // Get or create cart item relationship with requested quantity
-      const cartItem = await this.cartItemModel.findOrCreate({
+      const [ cartItem, created ]= await this.cartItemModel.findOrCreate({
         where: {
           cartId: cartId,
           itemId: itemId,
@@ -105,7 +107,7 @@ class CartService {
       );
 
       // cartItem found, not created.Incrementing quantity
-      if (!cartItem[1]) {
+      if (!created) {
         await this.cartItemModel.increment("quantity", {
           by: quantity,
           where: {
@@ -221,6 +223,7 @@ class CartService {
           },
           transaction: transaction,
         });
+
         logger.debug(`item Incremented:${JSON.stringify(itemIncrement)}`);
 
         await cartItem.destroy({ transaction: transaction });

@@ -95,6 +95,9 @@ async function addItemToCart(req, res, next) {
     await cartService.addItem(cartId, itemId, transaction, quantity);
     return res.sendStatus(StatusCodes.OK);
   } catch (err) {
+    if(err instanceof ResourceNotFoundError){
+      err.statusCode = StatusCodes.BAD_REQUEST
+    }
     next(err);
   }
 }
