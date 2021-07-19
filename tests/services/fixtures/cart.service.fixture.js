@@ -71,54 +71,83 @@ const listUserCartsData = [
 ];
 const findAllResolvedValueCartItem = [
   {
-    dataValues: { itemId: 1, quantity: 2000, Item: {
-        name:'apple'
-    } },
+    dataValues: {
+      itemId: 1,
+      quantity: 2000,
+      Item: {
+        name: "apple",
+      },
+    },
   },
   {
-    dataValues: { itemId: 3, quantity: 200, Item: {
-        name:'mango'
-    } },
+    dataValues: {
+      itemId: 3,
+      quantity: 200,
+      Item: {
+        name: "mango",
+      },
+    },
   },
 ];
 const listItemData = [
-    {
-        id: 1,
-        quantity: 2000,
-        name:'apple'
-
-    },
-    {
-        id: 3,
-        quantity: 200,
-        name:'mango'
-
-    }
-]
+  {
+    id: 1,
+    quantity: 2000,
+    name: "apple",
+  },
+  {
+    id: 3,
+    quantity: 200,
+    name: "mango",
+  },
+];
 const listUserCartIdsData = [11, 12, 13, 14, 15];
 
-
-const findByPkItemResolvedValueItem =  {
-    id: 4,
-    name: 'Macbook',
-    category: 'laptops',
-    stock: 348,
-    price: 9000,
-    sku: 42345348,
-    createdAt: "2021-07-14T16:08:16.000Z",
-    updatedAt: "2021-07-18T20:07:01.000Z"
-}
+const findByPkResolvedValueItem = {
+  id: 4,
+  name: "Macbook",
+  category: "laptops",
+  stock: 3480,
+  price: 9000,
+  sku: 42345348,
+  createdAt: "2021-07-14T16:08:16.000Z",
+  updatedAt: "2021-07-18T20:07:01.000Z",
+};
 const findOrCreateResolvedValueCreated = [
-    {
-        quantity: 100,
-        cartId: 11,
-        itemId: 4,
-        updatedAt: "2021-07-18T21:09:00.812Z",
-        createdAt: "2021-07-18T21:09:00.812Z"
-    },
-    true
+  {
+    quantity: 100,
+    cartId: 11,
+    itemId: 4,
+    updatedAt: "2021-07-18T21:09:00.812Z",
+    createdAt: "2021-07-18T21:09:00.812Z",
+  },
+  true,
+];
+const findOrCreateResolvedValueFound = [
+  {
+    quantity: 100,
+    cartId: 11,
+    itemId: 4,
+    updatedAt: "2021-07-18T21:09:00.812Z",
+    createdAt: "2021-07-18T21:09:00.812Z",
+  },
+  false,
+];
+const findOneResolvedValueCartItem =  {
+    quantity: 500,
+    cartId: 11,
+    itemId: 4,
+    createdAt: "2021-07-19T08:20:45.000Z",
+    updatedAt: "2021-07-19T08:20:45.000Z"
+}
+const updateResolvedValueCartItem =  {
+    quantity: 200,
+    cartId: 11,
+    itemId: 4,
+    createdAt: "2021-07-19T08:20:45.000Z",
+    updatedAt: "2021-07-19T08:20:45.000Z"
 
-]
+}
 
 module.exports = {
   createResolvedValue,
@@ -129,4 +158,7 @@ module.exports = {
   listItemData,
   findByPkResolvedValueItem,
   findOrCreateResolvedValueCreated,
+  findOrCreateResolvedValueFound,
+  findOneResolvedValueCartItem,
+  updateResolvedValueCartItem
 };

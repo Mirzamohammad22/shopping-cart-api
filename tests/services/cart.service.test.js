@@ -8,6 +8,7 @@ const {
   ResourceNotFoundError,
   UserError,
   LoginError,
+  ItemError,
 } = require("../../utils/errors/index");
 const cartServiceFixtures = require("./fixtures/cart.service.fixture");
 const CartService = require("../../services/cart.service");
@@ -25,17 +26,27 @@ const mockModels = makeMockModels(
       findByPk: undefined,
       findOrCreate: undefined,
       findOne: undefined,
+      decrement: undefined,
+      increment: undefined,
     },
     CartItem: {
       findAll: undefined,
       findByPk: undefined,
       findOrCreate: undefined,
       findOne: undefined,
+      decrement: undefined,
+      increment: undefined,
+      update: undefined,
     },
   },
   "models",
   ".js"
 );
+
+const transaction = {
+  commit: jest.fn().mockResolvedValue(true),
+  rollback: jest.fn().mockResolvedValue(true),
+};
 
 const cartService = new CartService(
   mockModels.Cart,
@@ -83,6 +94,7 @@ describe("cartService", () => {
       // Then
       expect(result).toEqual(cartServiceFixtures.findAllResolvedValueCart);
     });
+
     it("Should throw error if not carts exist for given user id", async () => {
       // Given
       mockModels.Cart.findAll = jest.fn().mockResolvedValue([]);
@@ -135,7 +147,7 @@ describe("cartService", () => {
         // Given
         mockModels.CartItem.findAll = jest
           .fn()
-          .mockResolvedValue(cartServiceFixtures.findAllResolvedValueCart);
+          .mockResolvedValue(cartServiceFixtures.findAllResolvedValueCartItem);
 
         // When
         const result = await cartService.listItems(1);
@@ -156,12 +168,154 @@ describe("cartService", () => {
         .mockResolvedValue(
           cartServiceFixtures.findOrCreateResolvedValueCreated
         );
+      mockModels.Item.decrement = jest.fn().mockResolvedValue([[null, 1]]);
 
       // When
-      const result = await cartService.addItem(4, 100);
+      const result = await cartService.addCartItem(1, 4, transaction);
 
       // Then
       expect(result).toEqual(true);
+    });
+    it("Should throw error if item stock not enough", async () => {
+      // Given
+      mockModels.Item.findByPk = jest
+        .fn()
+        .mockResolvedValue(cartServiceFixtures.findByPkResolvedValueItem);
+      try {
+        // When
+        const result = await cartService.addCartItem(
+          1,
+          4,
+          transaction,
+          10000000
+        );
+      } catch (err) {
+        // Then
+        expect(err.name).toEqual(ItemError.name);
+      }
+    });
+    it("Should throw error if item doesnt exist", async () => {
+      // Given
+      mockModels.Item.findByPk = jest.fn().mockResolvedValue(null);
+      try {
+        // When
+        const result = await cartService.addCartItem(1, 4, transaction, 10);
+      } catch (err) {
+        // Then
+        expect(err.name).toEqual(ResourceNotFoundError.name);
+      }
+    });
+    it("Should increment if item previously added", async () => {
+      // Given
+      mockModels.Item.findByPk = jest
+        .fn()
+        .mockResolvedValue(cartServiceFixtures.findByPkResolvedValueItem);
+      mockModels.CartItem.findOrCreate = jest
+        .fn()
+        .mockResolvedValue(cartServiceFixtures.findOrCreateResolvedValueFound);
+      mockModels.Item.decrement = jest.fn().mockResolvedValue([[null, 1]]);
+      mockModels.CartItem.increment = jest.fn().mockResolvedValue([[null, 1]]);
+
+      // When
+      const result = await cartService.addCartItem(1, 4, transaction, 10);
+      expect(result).toBe(true);
+    });
+  });
+
+  describe("updateCartItem", () => {
+    it("Should throw for non-existing cartItem ", async () => {
+      // Given
+
+      mockModels.CartItem.findOne = jest.fn().mockResolvedValue(null);
+
+      try {
+        // When
+        const result = await cartService.updateCartItem(1, 4, transaction, 10);
+      } catch (err) {
+        // Then
+        expect(err.name).toEqual(ResourceNotFoundError.name);
+      }
+    });
+    it("Should decrease item stock and update cartItem for higher requested quantity", async () => {
+      // Given
+
+      mockModels.CartItem.findOne = jest
+        .fn()
+        .mockResolvedValue(cartServiceFixtures.findOneResolvedValueCartItem);
+      mockModels.Item.findByPk = jest
+        .fn()
+        .mockResolvedValue(cartServiceFixtures.findByPkResolvedValueItem);
+      mockModels.Item.decrement = jest.fn().mockResolvedValue([[null, 1]]);
+      cartServiceFixtures.findOneResolvedValueCartItem.update = jest
+        .fn()
+        .mockResolvedValue(cartServiceFixtures.updateResolvedValueCartItem);
+
+      try {
+        // When
+        const result = await cartService.updateCartItem(1, 4, transaction, 600);
+        expect(result).toBe(true);
+      } catch (err) {
+        console.log(err);
+        // Then
+        expect(err.name).toEqual(ResourceNotFoundError.name);
+      }
+    });
+
+    it("Should decrease item stock and update cartItem for higher requested quantity", async () => {
+      // Given
+      mockModels.CartItem.findOne = jest
+        .fn()
+        .mockResolvedValue(cartServiceFixtures.findOneResolvedValueCartItem);
+      mockModels.Item.findByPk = jest
+        .fn()
+        .mockResolvedValue(cartServiceFixtures.findByPkResolvedValueItem);
+      mockModels.Item.decrement = jest.fn().mockResolvedValue([[null, 1]]);
+      cartServiceFixtures.findOneResolvedValueCartItem.update = jest
+        .fn()
+        .mockResolvedValue(cartServiceFixtures.updateResolvedValueCartItem);
+
+      // When
+      const result = await cartService.updateCartItem(1, 4, transaction, 600);
+
+      // Then
+      expect(result).toBe(true);
+    });
+
+    it("Should increase item stock and update cartItem for higher requested quantity", async () => {
+      // Given
+      mockModels.CartItem.findOne = jest
+        .fn()
+        .mockResolvedValue(cartServiceFixtures.findOneResolvedValueCartItem);
+      mockModels.Item.findByPk = jest
+        .fn()
+        .mockResolvedValue(cartServiceFixtures.findByPkResolvedValueItem);
+      mockModels.Item.increment = jest.fn().mockResolvedValue([[null, 1]]);
+      cartServiceFixtures.findOneResolvedValueCartItem.update = jest
+        .fn()
+        .mockResolvedValue(cartServiceFixtures.updateResolvedValueCartItem);
+
+      // When
+      const result = await cartService.updateCartItem(1, 4, transaction, 400);
+
+      // Then
+      expect(result).toBe(true);
+    });
+  });
+  describe("deleteCartItem", () => {
+    it("Should delete existing cartItem with valid inputs", async () => {
+      // Given
+      mockModels.CartItem.findOne = jest
+        .fn()
+        .mockResolvedValue(cartServiceFixtures.findOneResolvedValueCartItem);
+      cartServiceFixtures.findOneResolvedValueCartItem.destroy = jest
+        .fn()
+        .mockResolvedValue(true);
+
+      // When
+      const result = await cartService.deleteCartItem(1, 4, transaction);
+
+      // Then
+      expect(result).toBe(true);
     });
   });
 });
