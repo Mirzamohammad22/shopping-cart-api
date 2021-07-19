@@ -92,7 +92,7 @@ async function addItemToCart(req, res, next) {
     logger.info(
       `Adding itemId:${itemId} of Quantity:${quantity} to CartId:${cartId}`
     );
-    await cartService.addItem(cartId, itemId, transaction, quantity);
+    await cartService.addCartItem(cartId, itemId, transaction, quantity);
     return res.sendStatus(StatusCodes.OK);
   } catch (err) {
     if(err instanceof ResourceNotFoundError){
@@ -128,7 +128,7 @@ async function updateItemInCart(req, res, next) {
     logger.info(
       `Updating itemId:${itemId} of quantity:${quantity} to CartId:${cartId}`
     );
-    await cartService.updateItem(cartId, itemId, transaction, quantity);
+    await cartService.updateCartItem(cartId, itemId, transaction, quantity);
     return res.sendStatus(StatusCodes.OK);
   } catch (err) {
     next(err);

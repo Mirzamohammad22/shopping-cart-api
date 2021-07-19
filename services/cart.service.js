@@ -8,13 +8,14 @@ class CartService {
     this.itemModel = itemModel;
   }
 
-  async _isItemStockAvailable(itemId, quantity) {
+  async #isItemStockAvailable(itemId, quantity) {
     const item = await this.itemModel.findByPk(itemId);
     // If found, check if stock is greater than required
     if (!item) {
       throw new ResourceNotFoundError("Item");
     }
     const sufficient = item.stock >= quantity ? true : false;
+
     if (!sufficient) {
       throw new ItemError("Insufficient stock to meet quantity");
     }
@@ -31,7 +32,6 @@ class CartService {
     const cartDetails = {
       userId: userId,
     };
-    
     const createdCart = await this.cartModel.create(cartDetails);
     logger.info(`Created Cart:${JSON.stringify(createdCart)}`);
     return createdCart.id;
@@ -43,7 +43,7 @@ class CartService {
       attributes: { exclude: ["userId"] },
     });
 
-    logger.debug(`User id:${userId}, carts:${JSON.stringify(userCarts)}`)
+    logger.debug(`User id:${userId}, carts:${JSON.stringify(userCarts)}`);
     if (userCarts.length === 0) {
       throw new ResourceNotFoundError("Cart");
     }
@@ -75,10 +75,10 @@ class CartService {
     return items;
   }
 
-  async addItem(cartId, itemId, transaction, quantity = 1) {
+  async addCartItem(cartId, itemId, transaction, quantity = 1) {
     try {
       // Check if there is enough item stock
-      await this._isItemStockAvailable(itemId, quantity);
+      await this.#isItemStockAvailable(itemId, quantity);
 
       // Deduct requested quantity from item's stock
       const itemDecrement = await this.itemModel.decrement("stock", {
@@ -92,7 +92,7 @@ class CartService {
       logger.debug(`items affected:${JSON.stringify(itemDecrement)}`);
 
       // Get or create cart item relationship with requested quantity
-      const [ cartItem, created ]= await this.cartItemModel.findOrCreate({
+      const [cartItem, created] = await this.cartItemModel.findOrCreate({
         where: {
           cartId: cartId,
           itemId: itemId,
@@ -102,9 +102,7 @@ class CartService {
         },
         transaction: transaction,
       });
-      logger.debug(
-        `cartItem: ${JSON.stringify(cartItem[0])} created:${cartItem[1]}`
-      );
+      logger.debug(`cartItem: ${JSON.stringify(cartItem)} created:${created}`);
 
       // cartItem found, not created.Incrementing quantity
       if (!created) {
@@ -130,7 +128,7 @@ class CartService {
     }
   }
 
-  async updateItem(cartId, itemId, transaction, quantity) {
+  async updateCartItem(cartId, itemId, transaction, quantity) {
     try {
       // Get the cartItem
       const cartItem = await this.cartItemModel.findOne({
@@ -149,25 +147,25 @@ class CartService {
 
       if (quantityDifference < 0) {
         // Requested quantity is higher than current quantity, decreasing item stocks
-        quantityDifference = Math.abs(quantityDifference);
+
+        let quantityDifference = Math.abs(quantityDifference);
 
         // Check if there is enough item stock
-        await this._isItemStockAvailable(itemId, quantityDifference);
+        await this.#isItemStockAvailable(itemId, quantityDifference);
 
         logger.debug(
           `Decreasing stock by ${quantityDifference} for itemId:${itemId}`
         );
+
         const itemDecrement = await this.itemModel.decrement("stock", {
-          by: Math.abs(quantityDifference),
+          by: quantityDifference,
           where: {
             id: itemId,
           },
           transaction: transaction,
         });
         logger.debug(`Decrement result:${JSON.stringify(itemDecrement)}`);
-      }
-
-      if (quantityDifference > 0) {
+      } else if (quantityDifference > 0) {
         // Requested quantity is lower than current quantity, increasing item stocks
         logger.debug(
           `Increasing stock by ${quantityDifference} for itemId:${itemId}`
@@ -180,7 +178,10 @@ class CartService {
           transaction: transaction,
         });
         logger.debug(`Increment result:${JSON.stringify(itemIncrement)}`);
+      } else {
+        logger.debug("Requested quantity is same as current cartItem quantity");
       }
+
       const cartItemUpdated = await cartItem.update(
         { quantity: quantity },
         {
@@ -204,7 +205,7 @@ class CartService {
     }
   }
 
-  async deleteItem(cartId, itemId, transaction) {
+  async deleteCartItem(cartId, itemId, transaction) {
     try {
       // get cartItem
       const cartItem = await this.cartItemModel.findOne({
