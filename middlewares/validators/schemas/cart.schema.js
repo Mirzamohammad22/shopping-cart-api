@@ -1,5 +1,7 @@
 const { checkSchema } = require("express-validator");
 
+
+// TODO: Fix min validators
 const isIntErrorMessage = {
   errorMessage: "Value must be an Integer",
 };
@@ -40,6 +42,8 @@ const addCartItemSchema = checkSchema({
   },
 });
 
+
+// TODO: Fix min validators
 const deleteCartItemSchema = checkSchema({
   cartId: {
     in: ["params"],
@@ -72,10 +76,13 @@ const updateCartItemSchema = checkSchema({
     in: ["body"],
     optional: false,
     isInt: {
-      min: 1,
+      options:{
+        min:1,
+        max:50000,
+      },
       minimumQuantityMessage,
     },
-    toInt: true,
+    toInt:true
   },
 });
 

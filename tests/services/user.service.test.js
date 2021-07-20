@@ -93,7 +93,6 @@ describe("UserService", () => {
       // Given
       const { email, password, firstName, lastName } =
         userServiceFixtures.createUserData;
-      console.log(userServiceFixtures.findOrCreateResolvedValueFound);
       mockModels.User.findOrCreate = jest
         .fn()
         .mockResolvedValue(userServiceFixtures.findOrCreateResolvedValueFound);
@@ -121,7 +120,6 @@ describe("UserService", () => {
         const result = await userService.updateUser(1, {});
       } catch (err) {
         // Then
-        console.log(err);
         expect(err.name).toBe(ResourceNotFoundError.name);
       }
     });
@@ -139,7 +137,6 @@ describe("UserService", () => {
         const result = await userService.updateUser(1, {});
       } catch (err) {
         // Then
-        console.log(err);
         expect(err.name).toBe(UserError.name);
       }
     });
@@ -174,7 +171,6 @@ describe("UserService", () => {
         // When
         const result = await userService.loginUser(email, password);
       } catch (err) {
-        console.log(err);
         expect(err.name).toBe(LoginError.name);
       }
     });
@@ -187,7 +183,6 @@ describe("UserService", () => {
         // When
         const result = await userService.loginUser(email, password);
       } catch (err) {
-        console.log(err);
         expect(err.name).toBe(LoginError.name);
       }
     });
@@ -212,7 +207,6 @@ describe("UserService", () => {
   describe("getUser", () => {
     it("Should return data for existing user", async () => {
       // Given
-
       mockModels.User.findByPk = jest
         .fn()
         .mockResolvedValue(userServiceFixtures.findByPkResolvedValue);
@@ -228,9 +222,9 @@ describe("UserService", () => {
       };
       expect(result).toEqual(expected);
     });
+
     it("Should throw error for non-existing user", async () => {
       // Given
-
       mockModels.User.findByPk = jest.fn().mockResolvedValue(null);
       try {
         // When

@@ -1,6 +1,7 @@
 const logger = require("../utils/logger");
 const { ResourceNotFoundError, ItemError } = require("../utils/errors/index");
 
+// TODO: move transactions from controller to service.
 class CartService {
   constructor(cartModel, cartItemModel, itemModel) {
     this.cartModel = cartModel;
@@ -75,6 +76,7 @@ class CartService {
     return items;
   }
 
+  // TODO: attempt promise.all() for optimizing response time
   async addCartItem(cartId, itemId, transaction, quantity = 1) {
     try {
       // Check if there is enough item stock
@@ -128,6 +130,7 @@ class CartService {
     }
   }
 
+  // TODO: attempt promise.all() for optimizing response time
   async updateCartItem(cartId, itemId, transaction, quantity) {
     try {
       // Get the cartItem
