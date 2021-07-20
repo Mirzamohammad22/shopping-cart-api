@@ -7,7 +7,7 @@ module.exports = {
         allowNull: false,
         onDelete: "CASCADE",
         references: {
-          model: "carts",
+          model: "Carts",
           key: "id",
         },
       },
@@ -16,7 +16,7 @@ module.exports = {
         allowNull: false,
         onDelete: "CASCADE",
         references: {
-          model: "items",
+          model: "Items",
           key: "id",
         },
       },
@@ -41,7 +41,7 @@ module.exports = {
       fields: ["quantity"],
       type: "check",
       where: {
-        stock: {
+        quantity: {
           [Sequelize.Op.gte]: 1,
         },
       },

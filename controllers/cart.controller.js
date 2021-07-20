@@ -110,7 +110,7 @@ async function deleteItemFromCart(req, res, next) {
     await isCartOwner(cartId, userId);
     const transaction = await db.sequelize.transaction();
     logger.info(`Deleting itemId:${itemId} from CartId:${cartId}`);
-    await cartService.deleteItem(cartId, itemId, transaction);
+    await cartService.deleteCartItem(cartId, itemId, transaction);
     return res.sendStatus(StatusCodes.NO_CONTENT);
   } catch (err) {
     next(err);

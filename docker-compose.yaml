@@ -1,0 +1,50 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      args:
+        - NODE_ENV=development
+    command: nodemon server.js
+    ports:
+      - "3000:3000"
+    env_file:
+    - env_variables/app.env
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - node_modules:/usr/src/app/node_modules
+      - ./:/usr/src/app
+    networks:
+      - application
+
+  mysql:
+    image: mysql:8.0.25
+    env_file:
+    - env_variables/mysql.env
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - application
+
+  redis:
+    image: docker.io/bitnami/redis:6.2.4
+    env_file:
+    - env_variables/redis.env
+    volumes:
+      - 'redis_data:/bitnami/redis/data'
+    networks:
+      - application
+
+volumes:
+  node_modules:
+    driver: local
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  application:
+    driver: bridge
