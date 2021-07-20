@@ -5,8 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "debug": "nodemon -r dotenv/config server.js",
-    "start": "node server.js"
+    "debug": "nodemon -r dotenv/config ./src/server.js",
+    "start": "node ./src/server.js",
+    "db-migrate": "sequelize  --config ./config/db.config.js db:migrate",
+    "db-undo-migrate": "sequelize --config ./config/db.config.js db:migrate:undo",
+    "db-undo-migrate:all": "sequelize --config ./config/db.config.js db:migrate:undo:all",
+    "db-seed-data": "sequelize --config ./config/db.config.js db:seed:all"
   },
   "repository": {
     "type": "git",

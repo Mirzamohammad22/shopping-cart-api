@@ -16,4 +16,4 @@ RUN npm update && npm install && npm cache clean --force
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 COPY --chown=node:node . .
 
-CMD [ "node", "server.js" ]
+CMD [ "node", "./src/server.js" ]

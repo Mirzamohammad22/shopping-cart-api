@@ -1,4 +1,3 @@
-const UserService = require("../../services/user.service");
 const {
   UniqueConstraintError,
   ForeignKeyConstraintError,
@@ -9,9 +8,9 @@ const {
   UserError,
   LoginError,
   ItemError,
-} = require("../../utils/errors/index");
+} = require("../../src/utils/errors/index");
 const cartServiceFixtures = require("./fixtures/cart.service.fixture");
-const CartService = require("../../services/cart.service");
+const CartService = require("../../src/services/cart.service");
 const mockModels = makeMockModels(
   {
     Cart: {
@@ -39,8 +38,6 @@ const mockModels = makeMockModels(
       update: undefined,
     },
   },
-  "models",
-  ".js"
 );
 
 const transaction = {

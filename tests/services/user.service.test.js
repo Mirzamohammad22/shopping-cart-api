@@ -1,11 +1,11 @@
-const UserService = require("../../services/user.service");
+const UserService = require("../../src/services/user.service");
 const { UniqueConstraintError } = require("sequelize");
 const { makeMockModels } = require("sequelize-jest-helpers");
 const {
   ResourceNotFoundError,
   UserError,
   LoginError,
-} = require("../../utils/errors/index");
+} = require("../../src/utils/errors/index");
 
 const userServiceFixtures = require("./fixtures/user.service.fixture");
 const mockModels = makeMockModels(
@@ -17,8 +17,6 @@ const mockModels = makeMockModels(
       findOne: undefined,
     },
   },
-  "models",
-  ".js"
 );
 const mockedPasswordHasher = {
   verify: undefined,
@@ -93,6 +91,7 @@ describe("UserService", () => {
       // Given
       const { email, password, firstName, lastName } =
         userServiceFixtures.createUserData;
+
       mockModels.User.findOrCreate = jest
         .fn()
         .mockResolvedValue(userServiceFixtures.findOrCreateResolvedValueFound);
@@ -137,6 +136,7 @@ describe("UserService", () => {
         const result = await userService.updateUser(1, {});
       } catch (err) {
         // Then
+
         expect(err.name).toBe(UserError.name);
       }
     });
@@ -206,6 +206,7 @@ describe("UserService", () => {
   });
   describe("getUser", () => {
     it("Should return data for existing user", async () => {
+
       // Given
       mockModels.User.findByPk = jest
         .fn()

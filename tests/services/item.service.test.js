@@ -1,14 +1,12 @@
-const ItemService = require("../../services/item.service");
+const ItemService = require("../../src/services/item.service");
 
 const { Sequelize } = require("sequelize");
 const { makeMockModels } = require("sequelize-jest-helpers");
-const { ResourceNotFoundError } = require("../../utils/errors/index");
+const { ResourceNotFoundError } = require("../../src/utils/errors/index");
 const itemServiceFixtures = require("./fixtures/item.service.fixture");
 
 const mockModels = makeMockModels(
   { Item: { findAndCountAll: undefined } },
-  "models",
-  ".js"
 );
 
 const itemService = new ItemService(mockModels.Item);
