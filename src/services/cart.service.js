@@ -3,24 +3,47 @@ const { ResourceNotFoundError, ItemError } = require("../utils/errors/index");
 
 // TODO: move transactions from controller to service.
 class CartService {
-  constructor(cartModel, cartItemModel, itemModel) {
+  constructor(cartModel, cartItemModel, itemModel, sequelize) {
     this.cartModel = cartModel;
     this.cartItemModel = cartItemModel;
     this.itemModel = itemModel;
+    this.sequelize = sequelize;
   }
 
-  async #isItemStockAvailable(itemId, quantity) {
+  async #checkItemStockAvailable(itemId, quantity) {
     const item = await this.itemModel.findByPk(itemId);
-    // If found, check if stock is greater than required
     if (!item) {
       throw new ResourceNotFoundError("Item");
     }
+    // If found, check if stock is greater than quantity required
     const sufficient = item.stock >= quantity ? true : false;
-
     if (!sufficient) {
       throw new ItemError("Insufficient stock to meet quantity");
     }
     return sufficient;
+  }
+
+  async #increaseItemStock(itemId, quantity, transaction) {
+    logger.debug(`Increasing stock of itemId:${itemId} by ${quantity}`);
+    const item = await this.itemModel.increment("stock", {
+      by: quantity,
+      where: {
+        id: itemId,
+      },
+      transaction: transaction,
+    });
+    return item;
+  }
+  async #decreaseItemStock(itemId, quantity, transaction) {
+    logger.debug(`Decreasing stock of itemId:${itemId} by ${quantity}`);
+    const item = await this.itemModel.decrement("stock", {
+      by: quantity,
+      where: {
+        id: itemId,
+      },
+      transaction: transaction,
+    });
+    return item;
   }
 
   async listUserCartIds(userId) {
@@ -34,7 +57,7 @@ class CartService {
       userId: userId,
     };
     const createdCart = await this.cartModel.create(cartDetails);
-    logger.info(`Created Cart:${JSON.stringify(createdCart)}`);
+    logger.info(`Created Cart: ${JSON.stringify(createdCart)}`);
     return createdCart.id;
   }
 
@@ -43,8 +66,7 @@ class CartService {
       where: { userId: userId },
       attributes: { exclude: ["userId"] },
     });
-
-    logger.debug(`User id:${userId}, carts:${JSON.stringify(userCarts)}`);
+    logger.debug(`User id: ${userId}, Carts: ${JSON.stringify(userCarts)}`);
     if (userCarts.length === 0) {
       throw new ResourceNotFoundError("Cart");
     }
@@ -68,30 +90,19 @@ class CartService {
           id: cartItem.dataValues.itemId,
           name: cartItem.dataValues.Item.name,
           quantity: cartItem.dataValues.quantity,
+          price: cartItem.dataValues.Item.price,
         };
       });
     }
-
     logger.debug(`cartId:${cartId}, items found:${JSON.stringify(items)}`);
     return items;
   }
 
-  // TODO: attempt promise.all() for optimizing response time
-  async addCartItem(cartId, itemId, transaction, quantity = 1) {
+  async addCartItem(cartId, itemId, quantity = 1) {
+    const transaction = await this.sequelize.transaction();
     try {
-      // Check if there is enough item stock
-      await this.#isItemStockAvailable(itemId, quantity);
-
-      // Deduct requested quantity from item's stock
-      const itemDecrement = await this.itemModel.decrement("stock", {
-        by: quantity,
-        where: {
-          id: itemId,
-        },
-        transaction: transaction,
-      });
-
-      logger.debug(`items affected:${JSON.stringify(itemDecrement)}`);
+      await this.#checkItemStockAvailable(itemId, quantity);
+      await this.#decreaseItemStock(itemId, quantity, transaction);
 
       // Get or create cart item relationship with requested quantity
       const [cartItem, created] = await this.cartItemModel.findOrCreate({
@@ -118,7 +129,6 @@ class CartService {
         });
         logger.debug(`cartItem quantity incremented by ${quantity}`);
       }
-
       logger.info(
         `CartItem with cartId:${cartId},itemId:${itemId} with quantity:${quantity} added successfully`
       );
@@ -130,8 +140,8 @@ class CartService {
     }
   }
 
-  // TODO: attempt promise.all() for optimizing response time
-  async updateCartItem(cartId, itemId, transaction, quantity) {
+  async updateCartItem(cartId, itemId, quantity) {
+    const transaction = await this.sequelize.transaction();
     try {
       // Get the cartItem
       const cartItem = await this.cartItemModel.findOne({
@@ -139,50 +149,32 @@ class CartService {
           cartId: cartId,
           itemId: itemId,
         },
+        transaction: transaction,
       });
 
       // No cartItem exists
       if (!cartItem) {
         throw new ResourceNotFoundError("Cart Item");
       }
+
       // Calculating if stock should be increased or decreased
-      let quantityDifference = cartItem.quantity - quantity;
+      const quantityDifference = quantity - cartItem.quantity;
 
-      if (quantityDifference < 0) {
-        // Requested quantity is higher than current quantity, decreasing item stocks
-
-        let quantityDifference = Math.abs(quantityDifference);
-
-        // Check if there is enough item stock
-        await this.#isItemStockAvailable(itemId, quantityDifference);
-
-        logger.debug(
-          `Decreasing stock by ${quantityDifference} for itemId:${itemId}`
-        );
-
-        const itemDecrement = await this.itemModel.decrement("stock", {
-          by: quantityDifference,
-          where: {
-            id: itemId,
-          },
-          transaction: transaction,
-        });
-        logger.debug(`Decrement result:${JSON.stringify(itemDecrement)}`);
-      } else if (quantityDifference > 0) {
-        // Requested quantity is lower than current quantity, increasing item stocks
-        logger.debug(
-          `Increasing stock by ${quantityDifference} for itemId:${itemId}`
-        );
-        const itemIncrement = await this.itemModel.increment("stock", {
-          by: quantityDifference,
-          where: {
-            id: itemId,
-          },
-          transaction: transaction,
-        });
-        logger.debug(`Increment result:${JSON.stringify(itemIncrement)}`);
-      } else {
-        logger.debug("Requested quantity is same as current cartItem quantity");
+      if (quantityDifference !== 0) {
+        if (quantityDifference > 0) {
+          await this.#checkItemStockAvailable(itemId, quantityDifference);
+          await this.#decreaseItemStock(
+            itemId,
+            quantityDifference,
+            transaction
+          );
+        } else {
+          await this.#increaseItemStock(
+            itemId,
+            Math.abs(quantityDifference),
+            transaction
+          );
+        }
       }
 
       const cartItemUpdated = await cartItem.update(
@@ -195,6 +187,7 @@ class CartService {
           transaction: transaction,
         }
       );
+
       logger.debug(`carItem updated:${JSON.stringify(cartItemUpdated)}`);
 
       logger.info(
@@ -208,7 +201,8 @@ class CartService {
     }
   }
 
-  async deleteCartItem(cartId, itemId, transaction) {
+  async deleteCartItem(cartId, itemId) {
+    const transaction = await this.sequelize.transaction();
     try {
       // get cartItem
       const cartItem = await this.cartItemModel.findOne({
@@ -220,16 +214,7 @@ class CartService {
 
       // if found, add the quantity back to item stock
       if (cartItem) {
-        const itemIncrement = await this.itemModel.increment("stock", {
-          by: cartItem.quantity,
-          where: {
-            id: itemId,
-          },
-          transaction: transaction,
-        });
-
-        logger.debug(`item Incremented:${JSON.stringify(itemIncrement)}`);
-
+        await this.#increaseItemStock(itemId, cartItem.quantity, transaction);
         await cartItem.destroy({ transaction: transaction });
         logger.info(
           `CartItem with cartId:${cartId},itemId:${itemId} deleted successfully`

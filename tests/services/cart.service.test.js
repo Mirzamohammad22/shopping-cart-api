@@ -40,15 +40,20 @@ const mockModels = makeMockModels(
   },
 );
 
-const transaction = {
-  commit: jest.fn().mockResolvedValue(true),
-  rollback: jest.fn().mockResolvedValue(true),
+const mockSequelize = {
+  transaction: jest.fn().mockResolvedValue(
+    {
+      commit: jest.fn().mockResolvedValue(true),
+      rollback: jest.fn().mockResolvedValue(true),
+    }
+  )
 };
 
 const cartService = new CartService(
   mockModels.Cart,
   mockModels.CartItem,
-  mockModels.Item
+  mockModels.Item,
+  mockSequelize
 );
 
 describe("cartService", () => {
@@ -168,7 +173,7 @@ describe("cartService", () => {
       mockModels.Item.decrement = jest.fn().mockResolvedValue([[null, 1]]);
 
       // When
-      const result = await cartService.addCartItem(1, 4, transaction);
+      const result = await cartService.addCartItem(1, 4);
 
       // Then
       expect(result).toEqual(true);
@@ -183,7 +188,7 @@ describe("cartService", () => {
         const result = await cartService.addCartItem(
           1,
           4,
-          transaction,
+
           10000000
         );
       } catch (err) {
@@ -196,7 +201,7 @@ describe("cartService", () => {
       mockModels.Item.findByPk = jest.fn().mockResolvedValue(null);
       try {
         // When
-        const result = await cartService.addCartItem(1, 4, transaction, 10);
+        const result = await cartService.addCartItem(1, 4, 10);
       } catch (err) {
         // Then
         expect(err.name).toEqual(ResourceNotFoundError.name);
@@ -214,7 +219,7 @@ describe("cartService", () => {
       mockModels.CartItem.increment = jest.fn().mockResolvedValue([[null, 1]]);
 
       // When
-      const result = await cartService.addCartItem(1, 4, transaction, 10);
+      const result = await cartService.addCartItem(1, 4, 10);
       expect(result).toBe(true);
     });
   });
@@ -227,7 +232,7 @@ describe("cartService", () => {
 
       try {
         // When
-        const result = await cartService.updateCartItem(1, 4, transaction, 10);
+        const result = await cartService.updateCartItem(1, 4, 10);
       } catch (err) {
         // Then
         expect(err.name).toEqual(ResourceNotFoundError.name);
@@ -249,7 +254,7 @@ describe("cartService", () => {
 
       try {
         // When
-        const result = await cartService.updateCartItem(1, 4, transaction, 600);
+        const result = await cartService.updateCartItem(1, 4, 600);
         expect(result).toBe(true);
       } catch (err) {
         console.log(err);
@@ -272,7 +277,7 @@ describe("cartService", () => {
         .mockResolvedValue(cartServiceFixtures.updateResolvedValueCartItem);
 
       // When
-      const result = await cartService.updateCartItem(1, 4, transaction, 600);
+      const result = await cartService.updateCartItem(1, 4, 600);
 
       // Then
       expect(result).toBe(true);
@@ -292,7 +297,7 @@ describe("cartService", () => {
         .mockResolvedValue(cartServiceFixtures.updateResolvedValueCartItem);
 
       // When
-      const result = await cartService.updateCartItem(1, 4, transaction, 400);
+      const result = await cartService.updateCartItem(1, 4, 400);
 
       // Then
       expect(result).toBe(true);
@@ -304,12 +309,13 @@ describe("cartService", () => {
       mockModels.CartItem.findOne = jest
         .fn()
         .mockResolvedValue(cartServiceFixtures.findOneResolvedValueCartItem);
+      mockModels.Item.increment = jest.fn().mockResolvedValue([[undefined,1]])
       cartServiceFixtures.findOneResolvedValueCartItem.destroy = jest
         .fn()
         .mockResolvedValue(true);
 
       // When
-      const result = await cartService.deleteCartItem(1, 4, transaction);
+      const result = await cartService.deleteCartItem(1, 4);
 
       // Then
       expect(result).toBe(true);

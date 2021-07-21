@@ -7,8 +7,13 @@ const {
 } = require("../utils/errors/index");
 const CartService = require("../services/cart.service");
 const jsonCache = require("../utils/cache");
-const constants = require("../utils/constants")
-const cartService = new CartService(db.Cart, db.CartItem, db.Item);
+const constants = require("../utils/constants");
+const cartService = new CartService(
+  db.Cart,
+  db.CartItem,
+  db.Item,
+  db.sequelize
+);
 
 async function isCartOwner(cartId, userId) {
   try {
@@ -23,7 +28,9 @@ async function isCartOwner(cartId, userId) {
         (acc, cart) => ((acc[cart] = true), acc),
         {}
       );
-      await jsonCache.set(cacheKey, userCarts, { expire: constants.DAY_IN_SECONDS });
+      await jsonCache.set(cacheKey, userCarts, {
+        expire: constants.DAY_IN_SECONDS,
+      });
     }
 
     // verify cart belongs to user
@@ -84,19 +91,17 @@ async function listItemsInCart(req, res, next) {
 async function addItemToCart(req, res, next) {
   try {
     const cartId = req.params.cartId;
-    const itemId = req.body.itemId;
-    const quantity = req.body.quantity;
     const userId = req.authData.id;
+    const { quantity, itemId } = req.body;
     await isCartOwner(cartId, userId);
-    const transaction = await db.sequelize.transaction();
     logger.info(
       `Adding itemId:${itemId} of Quantity:${quantity} to CartId:${cartId}`
     );
-    await cartService.addCartItem(cartId, itemId, transaction, quantity);
+    await cartService.addCartItem(cartId, itemId, quantity);
     return res.sendStatus(StatusCodes.OK);
   } catch (err) {
-    if(err instanceof ResourceNotFoundError){
-      err.statusCode = StatusCodes.BAD_REQUEST
+    if (err instanceof ResourceNotFoundError) {
+      err.statusCode = StatusCodes.BAD_REQUEST;
     }
     next(err);
   }
@@ -108,9 +113,9 @@ async function deleteItemFromCart(req, res, next) {
     const itemId = req.params.itemId;
     const userId = req.authData.id;
     await isCartOwner(cartId, userId);
-    const transaction = await db.sequelize.transaction();
+
     logger.info(`Deleting itemId:${itemId} from CartId:${cartId}`);
-    await cartService.deleteCartItem(cartId, itemId, transaction);
+    await cartService.deleteCartItem(cartId, itemId);
     return res.sendStatus(StatusCodes.NO_CONTENT);
   } catch (err) {
     next(err);
@@ -124,11 +129,10 @@ async function updateItemInCart(req, res, next) {
     const quantity = req.body.quantity;
     const userId = req.authData.id;
     await isCartOwner(cartId, userId);
-    const transaction = await db.sequelize.transaction();
     logger.info(
       `Updating itemId:${itemId} of quantity:${quantity} to CartId:${cartId}`
     );
-    await cartService.updateCartItem(cartId, itemId, transaction, quantity);
+    await cartService.updateCartItem(cartId, itemId, quantity);
     return res.sendStatus(StatusCodes.OK);
   } catch (err) {
     next(err);
