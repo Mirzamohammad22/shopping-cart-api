@@ -76,7 +76,7 @@ async function listItemsInCart(req, res, next) {
     const userId = req.authData.id;
     await isCartOwner(cartId, userId);
     logger.info(`Listing items for cartId:${cartId}`);
-    const itemList = await cartService.listItems(cartId);
+    const itemList = await cartService.listCartItems(cartId);
     if (!itemList) {
       return res.json({
         message: "Cart is empty!",

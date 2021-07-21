@@ -76,6 +76,7 @@ const findAllResolvedValueCartItem = [
       quantity: 2000,
       Item: {
         name: "apple",
+        price: 100
       },
     },
   },
@@ -85,20 +86,23 @@ const findAllResolvedValueCartItem = [
       quantity: 200,
       Item: {
         name: "mango",
+        price: 100
       },
     },
   },
 ];
-const listItemData = [
+const listCartItemData = [
   {
     id: 1,
     quantity: 2000,
     name: "apple",
+    price:100
   },
   {
     id: 3,
     quantity: 200,
     name: "mango",
+    price: 100
   },
 ];
 const listUserCartIdsData = [11, 12, 13, 14, 15];
@@ -155,7 +159,7 @@ module.exports = {
   listUserCartsData,
   listUserCartIdsData,
   findAllResolvedValueCartItem,
-  listItemData,
+  listCartItemData,
   findByPkResolvedValueItem,
   findOrCreateResolvedValueCreated,
   findOrCreateResolvedValueFound,

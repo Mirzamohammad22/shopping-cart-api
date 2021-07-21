@@ -73,7 +73,7 @@ class CartService {
     return userCarts;
   }
 
-  async listItems(cartId) {
+  async listCartItems(cartId) {
     let items = undefined;
     const cartItems = await this.cartItemModel.findAll({
       where: {

@@ -11,42 +11,38 @@ const {
 } = require("../../src/utils/errors/index");
 const cartServiceFixtures = require("./fixtures/cart.service.fixture");
 const CartService = require("../../src/services/cart.service");
-const mockModels = makeMockModels(
-  {
-    Cart: {
-      findAll: undefined,
-      findByPk: undefined,
-      findOrCreate: undefined,
-      findOne: undefined,
-      create: undefined,
-    },
-    Item: {
-      findAll: undefined,
-      findByPk: undefined,
-      findOrCreate: undefined,
-      findOne: undefined,
-      decrement: undefined,
-      increment: undefined,
-    },
-    CartItem: {
-      findAll: undefined,
-      findByPk: undefined,
-      findOrCreate: undefined,
-      findOne: undefined,
-      decrement: undefined,
-      increment: undefined,
-      update: undefined,
-    },
+const mockModels = makeMockModels({
+  Cart: {
+    findAll: undefined,
+    findByPk: undefined,
+    findOrCreate: undefined,
+    findOne: undefined,
+    create: undefined,
   },
-);
+  Item: {
+    findAll: undefined,
+    findByPk: undefined,
+    findOrCreate: undefined,
+    findOne: undefined,
+    decrement: undefined,
+    increment: undefined,
+  },
+  CartItem: {
+    findAll: undefined,
+    findByPk: undefined,
+    findOrCreate: undefined,
+    findOne: undefined,
+    decrement: undefined,
+    increment: undefined,
+    update: undefined,
+  },
+});
 
 const mockSequelize = {
-  transaction: jest.fn().mockResolvedValue(
-    {
-      commit: jest.fn().mockResolvedValue(true),
-      rollback: jest.fn().mockResolvedValue(true),
-    }
-  )
+  transaction: jest.fn().mockResolvedValue({
+    commit: jest.fn().mockResolvedValue(true),
+    rollback: jest.fn().mockResolvedValue(true),
+  }),
 };
 
 const cartService = new CartService(
@@ -123,40 +119,29 @@ describe("cartService", () => {
       expect(result).toEqual(cartServiceFixtures.listUserCartIdsData);
     });
   });
-  describe("listItems", () => {
+  describe("listCartItems", () => {
     it("Should return undefined if no items in cart", async () => {
       // Given
       mockModels.CartItem.findAll = jest.fn().mockResolvedValue([]);
 
       // When
-      const result = await cartService.listItems(1);
+      const result = await cartService.listCartItems(1);
 
       // Then
       expect(result).toEqual(undefined);
     });
-    describe("listItems", () => {
-      it("Should return undefined if no items in cart", async () => {
-        // Given
-        mockModels.CartItem.findAll = jest.fn().mockResolvedValue([]);
+    it("Should return items list if they exist in cart", async () => {
+      // Given
+      mockModels.CartItem.findAll = jest
+        .fn()
+        .mockResolvedValue(cartServiceFixtures.findAllResolvedValueCartItem);
 
-        // When
-        const result = await cartService.listItems(1);
+      // When
+      const result = await cartService.listCartItems(1);
+      console.log("RESULTT!!!!! ", result);
 
-        // Then
-        expect(result).toEqual(undefined);
-      });
-      it("Should return items list if they exist in cart", async () => {
-        // Given
-        mockModels.CartItem.findAll = jest
-          .fn()
-          .mockResolvedValue(cartServiceFixtures.findAllResolvedValueCartItem);
-
-        // When
-        const result = await cartService.listItems(1);
-
-        // Then
-        expect(result).toEqual(cartServiceFixtures.listItemData);
-      });
+      // Then
+      expect(result).toEqual(cartServiceFixtures.listCartItemData);
     });
   });
   describe("addItem", () => {
@@ -309,7 +294,7 @@ describe("cartService", () => {
       mockModels.CartItem.findOne = jest
         .fn()
         .mockResolvedValue(cartServiceFixtures.findOneResolvedValueCartItem);
-      mockModels.Item.increment = jest.fn().mockResolvedValue([[undefined,1]])
+      mockModels.Item.increment = jest.fn().mockResolvedValue([[undefined, 1]]);
       cartServiceFixtures.findOneResolvedValueCartItem.destroy = jest
         .fn()
         .mockResolvedValue(true);
