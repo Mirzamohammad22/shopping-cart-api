@@ -1,15 +1,15 @@
 const { validationResult, matchedData } = require("express-validator");
-const {InputValidationError} = require("../../../utils/errors/index")
+const { InputValidationError } = require("../../../utils/errors/index");
 const logger = require("../../../utils/logger");
 
 function validateSchema(req, res, next) {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      throw new InputValidationError("Invalid input",errors.array())
+      throw new InputValidationError("Invalid input", errors.array());
     }
 
-    // get cleaned request data
+    // Get cleaned request data
     const cleanedBody = matchedData(req, {
       includeOptionals: false,
       locations: ["body"],
@@ -67,7 +67,10 @@ function validateSchema(req, res, next) {
           ...(extraQueryKeys.length > 0 ? { query: extraQueryKeys } : undefined),
         },
       };
-      throw new InputValidationError(errorObject.message,errorObject.locations);
+      throw new InputValidationError(
+        errorObject.message,
+        errorObject.locations
+      );
     }
 
     // replacing request with cleaned and sanitized data.

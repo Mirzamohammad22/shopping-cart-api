@@ -68,6 +68,7 @@ class UserService {
       throw new ResourceNotFoundError("User");
     }
     const user = {
+      id: result.id,
       email: result.email,
       firstName: result.firstName,
       lastName: result.lastName,

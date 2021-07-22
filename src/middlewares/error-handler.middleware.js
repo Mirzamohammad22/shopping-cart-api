@@ -1,9 +1,16 @@
 const logger = require("../utils/logger");
-
+const { StatusCodes } = require("http-status-codes");
 module.exports = errorHandler = (err, req, res, next) => {
-  if (err.statusCode === undefined || err.statusCode === 500) {
+  if (
+    err.statusCode === undefined ||
+    err.statusCode === StatusCodes.INTERNAL_SERVER_ERROR
+  ) {
     logger.error(err);
-    return res.status(500).send();
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      error: {
+        message: "Internal Server Error",
+      },
+    });
   } else {
     return res.status(err.statusCode).json({
       error: {

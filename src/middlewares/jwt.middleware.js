@@ -1,13 +1,15 @@
 const jwt = require("jsonwebtoken");
 const logger = require("../utils/logger");
-const { UnAuthorizedUserError } = require("../utils/errors/index");
+const {  AuthorizationError } = require("../utils/errors/index");
+const { StatusCodes } = require("http-status-codes");
+
 const jwtSecret = process.env.JWT_SECRET;
 
 async function authenticateJwt(req, res, next) {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-      throw new UnAuthorizedUserError("UNAUTHORIZED", 401);
+      throw new AuthorizationError("Unauthorized", StatusCodes.UNAUTHORIZED);
     }
 
     const token = authHeader.split(" ")[1];

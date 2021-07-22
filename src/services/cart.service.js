@@ -68,7 +68,7 @@ class CartService {
     });
     logger.debug(`User id: ${userId}, Carts: ${JSON.stringify(userCarts)}`);
     if (userCarts.length === 0) {
-      throw new ResourceNotFoundError("Cart");
+      throw new ResourceNotFoundError("Carts");
     }
     return userCarts;
   }

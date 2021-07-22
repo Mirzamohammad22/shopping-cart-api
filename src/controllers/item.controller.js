@@ -1,6 +1,4 @@
-const logger = require("../utils/logger");
 const db = require("../models/index");
-const { StatusCodes } = require("http-status-codes");
 const ItemService = require("../services/item.service");
 const pagination = require("../utils/pagination");
 const itemService = new ItemService(db.Item);

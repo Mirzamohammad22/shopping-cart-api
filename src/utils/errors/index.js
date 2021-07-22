@@ -35,8 +35,8 @@ class UserError extends BaseError {
   }
 }
 
-class UnAuthorizedUserError extends BaseError {
-  constructor(message = "FORBIDDEN", statusCode = StatusCodes.FORBIDDEN) {
+class AuthorizationError extends BaseError {
+  constructor(message = "Forbidden", statusCode = StatusCodes.FORBIDDEN) {
     super(message, statusCode);
     this.name = this.constructor.name;
   }
@@ -70,6 +70,6 @@ module.exports = {
   CartError: CartError,
   UserError: UserError,
   LoginError: LoginError,
-  UnAuthorizedUserError: UnAuthorizedUserError,
+  AuthorizationError,
   InputValidationError: InputValidationError,
 };
