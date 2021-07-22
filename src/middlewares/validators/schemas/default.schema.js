@@ -4,23 +4,31 @@ const urlIdSchema = checkSchema({
   id: {
     in: "params",
     isInt: true,
-    toInt:true,
-  }
+    toInt: true,
+  },
 });
 
 const paginationSchema = checkSchema({
   page: {
     in: ["query"],
     optional: true,
-    isInt: true,
+    isInt: {
+      options: {
+        min: 1,
+      },
+    },
     toInt: true,
   },
   size: {
     in: ["query"],
     optional: true,
-    isInt: true,
+    isInt: {
+      options: {
+        min: 1,
+      },
+    },
     toInt: true,
   },
 });
 
-module.exports = {urlIdSchema,paginationSchema};
+module.exports = { urlIdSchema, paginationSchema };

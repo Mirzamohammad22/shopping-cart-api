@@ -78,7 +78,6 @@ const updateCartItemSchema = checkSchema({
     isInt: {
       options:{
         min:1,
-        max:50000,
       },
       minimumQuantityMessage,
     },

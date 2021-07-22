@@ -85,10 +85,13 @@ const updateUserSchema = checkSchema({
   },
 });
 
-const loginSchema = checkSchema ({
+const loginSchema = checkSchema({
   email: {
     in: "body",
     optional: false,
+    isEmail: {
+      errorMessage: "Valid email required",
+    },
     normalizeEmail: true,
     trim: true,
     toLowerCase: true,
@@ -99,10 +102,10 @@ const loginSchema = checkSchema ({
     exists: {
       checkFalsy: true,
     },
-    isString:{
-      errorMessage: "Password must be a string"
-    }
+    isString: {
+      errorMessage: "Password must be a string",
+    },
   },
-})
+});
 
 module.exports = { createUserSchema, updateUserSchema, loginSchema };

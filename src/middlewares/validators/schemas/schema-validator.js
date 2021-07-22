@@ -25,17 +25,17 @@ function validateSchema(req, res, next) {
 
     logger.debug(
       `RawRequestQuery:${JSON.stringify(req.query)}
-     \n 
+     \n
      ValidatedRequestQuery:${JSON.stringify(cleanedQuery)}`
     );
     logger.debug(
-      `RawRequestParams:${JSON.stringify(req.params)} 
-    \n 
+      `RawRequestParams:${JSON.stringify(req.params)}
+    \n
     ValidatedRequestParams:${JSON.stringify(cleanedParams)}`
     );
     logger.debug(
-      `RawRequestBody:${JSON.stringify(req.body)} 
-    \n 
+      `RawRequestBody:${JSON.stringify(req.body)}
+    \n
     ValidatedRequestBody:${JSON.stringify(cleanedBody)}`
     );
 
@@ -52,7 +52,7 @@ function validateSchema(req, res, next) {
 
     /**
      * If any unexpected keys exists, we want to notify client instead of ignoring it.
-     * This way client wont break his head on why something is not working as expected.
+     * This way client wont break their head on why something is not working as expected.
      */
     if (
       extraBodyKeys.length > 0 ||
@@ -60,7 +60,7 @@ function validateSchema(req, res, next) {
       extraQueryKeys.length > 0
     ) {
       const errorObject = {
-        message: "Unexpected Keys passed in the Request",
+        message: "Unexpected keys passed in the request",
         locations: {
           ...(extraBodyKeys.length > 0 ? { body: extraBodyKeys } : undefined),
           ...(extraParamKeys.length > 0 ? { params: extraParamKeys } : undefined),
