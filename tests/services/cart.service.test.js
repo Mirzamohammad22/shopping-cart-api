@@ -1,12 +1,9 @@
 const {
-  UniqueConstraintError,
   ForeignKeyConstraintError,
 } = require("sequelize");
 const { makeMockModels } = require("sequelize-jest-helpers");
 const {
   ResourceNotFoundError,
-  UserError,
-  LoginError,
   ItemError,
 } = require("../../src/utils/errors/index");
 const cartServiceFixtures = require("./fixtures/cart.service.fixture");
@@ -58,13 +55,13 @@ describe("cartService", () => {
       // Given
       mockModels.Cart.create = jest
         .fn()
-        .mockResolvedValue(cartServiceFixtures.createResolvedValue);
+        .mockResolvedValue(cartServiceFixtures.createCart);
 
       // When
       const result = await cartService.createCart(3);
 
       // Then
-      expect(result).toEqual(cartServiceFixtures.createResolvedValue.id);
+      expect(result).toEqual(cartServiceFixtures.createCart.id);
     });
     it("Should throw error for non-existent user id", async () => {
       // Given
@@ -84,13 +81,13 @@ describe("cartService", () => {
       // Given
       mockModels.Cart.findAll = jest
         .fn()
-        .mockResolvedValue(cartServiceFixtures.findAllResolvedValueCart);
+        .mockResolvedValue(cartServiceFixtures.findAllCart);
 
       // When
       const result = await cartService.listUserCarts(1);
 
       // Then
-      expect(result).toEqual(cartServiceFixtures.findAllResolvedValueCart);
+      expect(result).toEqual(cartServiceFixtures.findAllCart);
     });
 
     it("Should throw error if not carts exist for given user id", async () => {
@@ -110,13 +107,13 @@ describe("cartService", () => {
       // Given
       cartService.listUserCarts = jest
         .fn()
-        .mockResolvedValue(cartServiceFixtures.listUserCartsData);
+        .mockResolvedValue(cartServiceFixtures.listUserCarts);
 
       // When
       const result = await cartService.listUserCartIds(1);
 
       // Then
-      expect(result).toEqual(cartServiceFixtures.listUserCartIdsData);
+      expect(result).toEqual(cartServiceFixtures.listUserCartIds);
     });
   });
   describe("listCartItems", () => {
@@ -134,14 +131,14 @@ describe("cartService", () => {
       // Given
       mockModels.CartItem.findAll = jest
         .fn()
-        .mockResolvedValue(cartServiceFixtures.findAllResolvedValueCartItem);
+        .mockResolvedValue(cartServiceFixtures.findAllCartItem);
 
       // When
       const result = await cartService.listCartItems(1);
       console.log("RESULTT!!!!! ", result);
 
       // Then
-      expect(result).toEqual(cartServiceFixtures.listCartItemData);
+      expect(result).toEqual(cartServiceFixtures.listCartItem);
     });
   });
   describe("addItem", () => {
@@ -149,11 +146,11 @@ describe("cartService", () => {
       // Given
       mockModels.Item.findByPk = jest
         .fn()
-        .mockResolvedValue(cartServiceFixtures.findByPkResolvedValueItem);
+        .mockResolvedValue(cartServiceFixtures.findByPkItem);
       mockModels.CartItem.findOrCreate = jest
         .fn()
         .mockResolvedValue(
-          cartServiceFixtures.findOrCreateResolvedValueCreated
+          cartServiceFixtures.findOrCreateCartItemCeated
         );
       mockModels.Item.decrement = jest.fn().mockResolvedValue([[null, 1]]);
 
@@ -167,7 +164,7 @@ describe("cartService", () => {
       // Given
       mockModels.Item.findByPk = jest
         .fn()
-        .mockResolvedValue(cartServiceFixtures.findByPkResolvedValueItem);
+        .mockResolvedValue(cartServiceFixtures.findByPkItem);
       try {
         // When
         const result = await cartService.addCartItem(
@@ -196,10 +193,10 @@ describe("cartService", () => {
       // Given
       mockModels.Item.findByPk = jest
         .fn()
-        .mockResolvedValue(cartServiceFixtures.findByPkResolvedValueItem);
+        .mockResolvedValue(cartServiceFixtures.findByPkItem);
       mockModels.CartItem.findOrCreate = jest
         .fn()
-        .mockResolvedValue(cartServiceFixtures.findOrCreateResolvedValueFound);
+        .mockResolvedValue(cartServiceFixtures.findOrCreateCartItemFound);
       mockModels.Item.decrement = jest.fn().mockResolvedValue([[null, 1]]);
       mockModels.CartItem.increment = jest.fn().mockResolvedValue([[null, 1]]);
 
@@ -228,14 +225,14 @@ describe("cartService", () => {
 
       mockModels.CartItem.findOne = jest
         .fn()
-        .mockResolvedValue(cartServiceFixtures.findOneResolvedValueCartItem);
+        .mockResolvedValue(cartServiceFixtures.findOneCartItem);
       mockModels.Item.findByPk = jest
         .fn()
-        .mockResolvedValue(cartServiceFixtures.findByPkResolvedValueItem);
+        .mockResolvedValue(cartServiceFixtures.findByPkItem);
       mockModels.Item.decrement = jest.fn().mockResolvedValue([[null, 1]]);
-      cartServiceFixtures.findOneResolvedValueCartItem.update = jest
+      cartServiceFixtures.findOneCartItem.update = jest
         .fn()
-        .mockResolvedValue(cartServiceFixtures.updateResolvedValueCartItem);
+        .mockResolvedValue(cartServiceFixtures.updateCartItem);
 
       try {
         // When
@@ -252,14 +249,14 @@ describe("cartService", () => {
       // Given
       mockModels.CartItem.findOne = jest
         .fn()
-        .mockResolvedValue(cartServiceFixtures.findOneResolvedValueCartItem);
+        .mockResolvedValue(cartServiceFixtures.findOneCartItem);
       mockModels.Item.findByPk = jest
         .fn()
-        .mockResolvedValue(cartServiceFixtures.findByPkResolvedValueItem);
+        .mockResolvedValue(cartServiceFixtures.findByPkItem);
       mockModels.Item.decrement = jest.fn().mockResolvedValue([[null, 1]]);
-      cartServiceFixtures.findOneResolvedValueCartItem.update = jest
+      cartServiceFixtures.findOneCartItem.update = jest
         .fn()
-        .mockResolvedValue(cartServiceFixtures.updateResolvedValueCartItem);
+        .mockResolvedValue(cartServiceFixtures.updateCartItem);
 
       // When
       const result = await cartService.updateCartItem(1, 4, 600);
@@ -272,14 +269,14 @@ describe("cartService", () => {
       // Given
       mockModels.CartItem.findOne = jest
         .fn()
-        .mockResolvedValue(cartServiceFixtures.findOneResolvedValueCartItem);
+        .mockResolvedValue(cartServiceFixtures.findOneCartItem);
       mockModels.Item.findByPk = jest
         .fn()
-        .mockResolvedValue(cartServiceFixtures.findByPkResolvedValueItem);
+        .mockResolvedValue(cartServiceFixtures.findByPkItem);
       mockModels.Item.increment = jest.fn().mockResolvedValue([[null, 1]]);
-      cartServiceFixtures.findOneResolvedValueCartItem.update = jest
+      cartServiceFixtures.findOneCartItem.update = jest
         .fn()
-        .mockResolvedValue(cartServiceFixtures.updateResolvedValueCartItem);
+        .mockResolvedValue(cartServiceFixtures.updateCartItem);
 
       // When
       const result = await cartService.updateCartItem(1, 4, 400);
@@ -293,9 +290,9 @@ describe("cartService", () => {
       // Given
       mockModels.CartItem.findOne = jest
         .fn()
-        .mockResolvedValue(cartServiceFixtures.findOneResolvedValueCartItem);
+        .mockResolvedValue(cartServiceFixtures.findOneCartItem);
       mockModels.Item.increment = jest.fn().mockResolvedValue([[undefined, 1]]);
-      cartServiceFixtures.findOneResolvedValueCartItem.destroy = jest
+      cartServiceFixtures.findOneCartItem.destroy = jest
         .fn()
         .mockResolvedValue(true);
 

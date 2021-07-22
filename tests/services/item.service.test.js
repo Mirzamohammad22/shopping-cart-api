@@ -29,20 +29,20 @@ describe("Item Service", () => {
       // Given
       mockModels.Item.findAndCountAll = jest
         .fn()
-        .mockResolvedValue(itemServiceFixtures.findAndCountAllResolvedValue);
+        .mockResolvedValue(itemServiceFixtures.findAndCountAllItem);
 
       // When
       const result = await itemService.listItems();
 
       // Then
-      expect(result).toEqual(itemServiceFixtures.listItemsResolvedValue);
+      expect(result).toEqual(itemServiceFixtures.listItemsData);
     });
 
     it("Should reject if no data exists ", async () => {
       // Given
       mockModels.Item.findAndCountAll = jest
         .fn()
-        .mockResolvedValue(itemServiceFixtures.findAndCountAllEmptyMatch);
+        .mockResolvedValue(itemServiceFixtures.findAndCountAllItemEmptyMatch);
       try {
         // When
         const result = await itemService.listItems();

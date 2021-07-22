@@ -70,7 +70,7 @@ describe("UserService", () => {
       mockModels.User.findOrCreate = jest
         .fn()
         .mockResolvedValue(
-          userServiceFixtures.findOrCreateResolvedValueCreated
+          userServiceFixtures.findOrCreateUserCreated
         );
 
       // When
@@ -83,7 +83,7 @@ describe("UserService", () => {
 
       // Then
       const expected =
-        userServiceFixtures.findOrCreateResolvedValueCreated[0].id;
+        userServiceFixtures.findOrCreateUserCreated[0].id;
       expect(result).toBe(expected);
     });
 
@@ -94,7 +94,7 @@ describe("UserService", () => {
 
       mockModels.User.findOrCreate = jest
         .fn()
-        .mockResolvedValue(userServiceFixtures.findOrCreateResolvedValueFound);
+        .mockResolvedValue(userServiceFixtures.findOrCreateUserFound);
       try {
         // When
 
@@ -125,12 +125,12 @@ describe("UserService", () => {
 
     it("Should throw error for already registered email", async () => {
       // Given
-      userServiceFixtures.findByPkResolvedValue.update = jest
+      userServiceFixtures.findByPkUser.update = jest
         .fn()
         .mockRejectedValue(new UniqueConstraintError());
       mockModels.User.findByPk = jest
         .fn()
-        .mockResolvedValue(userServiceFixtures.findByPkResolvedValue);
+        .mockResolvedValue(userServiceFixtures.findByPkUser);
       try {
         // When
         const result = await userService.updateUser(1, {});
@@ -143,12 +143,12 @@ describe("UserService", () => {
 
     it("Should return true for successfull update", async () => {
       // Given
-      userServiceFixtures.findByPkResolvedValue.update = jest
+      userServiceFixtures.findByPkUser.update = jest
         .fn()
         .mockResolvedValue({});
       mockModels.User.findByPk = jest
         .fn()
-        .mockResolvedValue(userServiceFixtures.findByPkResolvedValue);
+        .mockResolvedValue(userServiceFixtures.findByPkUser);
 
       // When
       const result = await userService.updateUser(
@@ -165,7 +165,7 @@ describe("UserService", () => {
       const { email, password } = userServiceFixtures.createUserData;
       mockModels.User.findOne = jest
         .fn()
-        .mockResolvedValue(userServiceFixtures.findOneResolvedValue);
+        .mockResolvedValue(userServiceFixtures.findOneUser);
       mockedPasswordHasher.compare = jest.fn().mockResolvedValue(false);
       try {
         // When
@@ -193,7 +193,7 @@ describe("UserService", () => {
       const { email, password } = userServiceFixtures.createUserData;
       mockModels.User.findOne = jest
         .fn()
-        .mockResolvedValue(userServiceFixtures.findOneResolvedValue);
+        .mockResolvedValue(userServiceFixtures.findOneUser);
       mockedPasswordHasher.compare = jest.fn().mockResolvedValue(true);
       mockedJwt.sign = jest.fn().mockResolvedValue(jwtToken);
 
@@ -210,16 +210,17 @@ describe("UserService", () => {
       // Given
       mockModels.User.findByPk = jest
         .fn()
-        .mockResolvedValue(userServiceFixtures.findByPkResolvedValue);
+        .mockResolvedValue(userServiceFixtures.findByPkUser);
 
       // When
       const result = await userService.getUser(3);
 
       // Then
       const expected = {
-        email: userServiceFixtures.findByPkResolvedValue.email,
-        firstName: userServiceFixtures.findByPkResolvedValue.firstName,
-        lastName: userServiceFixtures.findByPkResolvedValue.lastName,
+        id: userServiceFixtures.findByPkUser.id,
+        email: userServiceFixtures.findByPkUser.email,
+        firstName: userServiceFixtures.findByPkUser.firstName,
+        lastName: userServiceFixtures.findByPkUser.lastName,
       };
       expect(result).toEqual(expected);
     });

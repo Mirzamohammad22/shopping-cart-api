@@ -1,11 +1,11 @@
-const createResolvedValue = {
+const createCart = {
   id: 16,
   userId: 3,
   updatedAt: "2021-07-18T16:08:16.000Z",
   createdAt: "2021-07-18T12:21:20.000Z",
 };
 
-const findAllResolvedValueCart = [
+const findAllCart = [
   {
     id: 11,
     createdAt: "2021-07-09T12:21:20.000Z",
@@ -32,7 +32,8 @@ const findAllResolvedValueCart = [
     updatedAt: "2021-07-18T10:37:05.000Z",
   },
 ];
-const listUserCartsData = [
+
+const listUserCarts = [
   {
     dataValues: {
       id: 11,
@@ -69,14 +70,15 @@ const listUserCartsData = [
     },
   },
 ];
-const findAllResolvedValueCartItem = [
+
+const findAllCartItem = [
   {
     dataValues: {
       itemId: 1,
       quantity: 2000,
       Item: {
         name: "apple",
-        price: 100
+        price: 100,
       },
     },
   },
@@ -86,28 +88,29 @@ const findAllResolvedValueCartItem = [
       quantity: 200,
       Item: {
         name: "mango",
-        price: 100
+        price: 100,
       },
     },
   },
 ];
-const listCartItemData = [
+
+const listCartItem = [
   {
     id: 1,
     quantity: 2000,
     name: "apple",
-    price:100
+    price: 100,
   },
   {
     id: 3,
     quantity: 200,
     name: "mango",
-    price: 100
+    price: 100,
   },
 ];
-const listUserCartIdsData = [11, 12, 13, 14, 15];
+const listUserCartIds = [11, 12, 13, 14, 15];
 
-const findByPkResolvedValueItem = {
+const findByPkItem = {
   id: 4,
   name: "Macbook",
   category: "laptops",
@@ -117,7 +120,8 @@ const findByPkResolvedValueItem = {
   createdAt: "2021-07-14T16:08:16.000Z",
   updatedAt: "2021-07-18T20:07:01.000Z",
 };
-const findOrCreateResolvedValueCreated = [
+
+const findOrCreateCartItemCeated = [
   {
     quantity: 100,
     cartId: 11,
@@ -127,7 +131,8 @@ const findOrCreateResolvedValueCreated = [
   },
   true,
 ];
-const findOrCreateResolvedValueFound = [
+
+const findOrCreateCartItemFound = [
   {
     quantity: 100,
     cartId: 11,
@@ -137,32 +142,33 @@ const findOrCreateResolvedValueFound = [
   },
   false,
 ];
-const findOneResolvedValueCartItem =  {
-    quantity: 500,
-    cartId: 11,
-    itemId: 4,
-    createdAt: "2021-07-19T08:20:45.000Z",
-    updatedAt: "2021-07-19T08:20:45.000Z"
-}
-const updateResolvedValueCartItem =  {
-    quantity: 200,
-    cartId: 11,
-    itemId: 4,
-    createdAt: "2021-07-19T08:20:45.000Z",
-    updatedAt: "2021-07-19T08:20:45.000Z"
 
-}
+const findOneCartItem = {
+  quantity: 500,
+  cartId: 11,
+  itemId: 4,
+  createdAt: "2021-07-19T08:20:45.000Z",
+  updatedAt: "2021-07-19T08:20:45.000Z",
+};
+
+const updateCartItem = {
+  quantity: 200,
+  cartId: 11,
+  itemId: 4,
+  createdAt: "2021-07-19T08:20:45.000Z",
+  updatedAt: "2021-07-19T08:20:45.000Z",
+};
 
 module.exports = {
-  createResolvedValue,
-  findAllResolvedValueCart,
-  listUserCartsData,
-  listUserCartIdsData,
-  findAllResolvedValueCartItem,
-  listCartItemData,
-  findByPkResolvedValueItem,
-  findOrCreateResolvedValueCreated,
-  findOrCreateResolvedValueFound,
-  findOneResolvedValueCartItem,
-  updateResolvedValueCartItem
+  createCart,
+  findAllCart,
+  listUserCarts,
+  listUserCartIds,
+  findAllCartItem,
+  listCartItem,
+  findByPkItem,
+  findOrCreateCartItemCeated,
+  findOrCreateCartItemFound,
+  findOneCartItem,
+  updateCartItem,
 };
