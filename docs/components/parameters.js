@@ -22,7 +22,7 @@ module.exports = {
         default: 5,
       },
       description:
-        "The numbers of items to return in one page for lists with pagination",
+        "The numbers of items to return per page",
     },
     userId: {
       name: "userId",

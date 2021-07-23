@@ -31,16 +31,8 @@ module.exports = {
       },
     },
     responses: {
-      200: {
-        description: "***OK*** - User updated successfully.",
-        content: {
-          "plain/text": {
-            schema: {
-              type: "string",
-              example: "OK",
-            },
-          },
-        },
+      204: {
+        description: "***No Content*** - Updated user successfully.",
       },
       401: {
         $ref: "#/components/responses/401",

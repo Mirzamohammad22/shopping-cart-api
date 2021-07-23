@@ -35,16 +35,8 @@ module.exports = {
       },
     },
     responses: {
-      200: {
-        description: "***OK*** - Item updated in cart successfully.",
-        content: {
-          "plain/text": {
-            schema: {
-              type: "string",
-              example: "OK",
-            },
-          },
-        },
+      204: {
+        description: "***No Content*** - Updated cart successfully.",
       },
       400: {
         $ref: "#/components/responses/invalidCartItemInput",
