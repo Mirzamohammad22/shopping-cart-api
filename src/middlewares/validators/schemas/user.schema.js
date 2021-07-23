@@ -1,44 +1,52 @@
 const { checkSchema } = require("express-validator");
+const {INPUT_VALIDATOR_ERROR_MESSAGES} = require('../../../utils/constants')
+
+const passwordLengthOptions = {
+  errorMessage: "Password must be atleast 8 characters",
+  options: { min: 8 },
+}
+
+const isEmailOptions = {
+  errorMessage: "Valid email required",
+}
+
+const existsOptions = {
+  errorMessage: INPUT_VALIDATOR_ERROR_MESSAGES.validValue,
+  options: { checkFalsy: true },
+}
+
+const isStringOptions = {
+  errorMessage: INPUT_VALIDATOR_ERROR_MESSAGES.isString
+}
 
 const createUserSchema = checkSchema({
   email: {
     in: "body",
-    isEmail: {
-      errorMessage: "Valid email required",
-    },
+    optional: false,
+    isEmail: isEmailOptions,
     normalizeEmail: true,
     trim: true,
-    toLowerCase: true,
   },
   firstName: {
     in: "body",
     optional: false,
-    exists: {
-      errorMessage: "Valid firstname required",
-      options: { checkFalsy: true },
-    },
+    isString: isStringOptions,
+    exists: existsOptions,
     trim: true,
   },
   lastName: {
     in: "body",
     optional: true,
-    exists: {
-      errorMessage: "Valid lastname required",
-      options: { checkFalsy: true },
-    },
+    isString: isStringOptions,
+    exists: existsOptions,
     trim: true,
   },
   password: {
-    optional: false,
     in: "body",
-    isLength: {
-      errorMessage: "Password must be atleast 8 characters",
-      options: { min: 8 },
-    },
-    exists: {
-      checkFalsy: true,
-    },
-    trim: true,
+    optional: false,
+    isLength:passwordLengthOptions,
+    isString: isStringOptions,
+    exists: existsOptions,
   },
 });
 
@@ -46,42 +54,30 @@ const updateUserSchema = checkSchema({
   email: {
     in: "body",
     optional: true,
-    isEmail: {
-      errorMessage: "Valid email required",
-    },
+    isEmail: isEmailOptions,
     normalizeEmail: true,
     trim: true,
-    toLowerCase: true,
   },
   firstName: {
     in: "body",
     optional: true,
-    exists: {
-      errorMessage: "Valid firstname required",
-      options: { checkFalsy: true },
-    },
+    isString: isStringOptions,
+    exists: existsOptions,
     trim: true,
   },
   lastName: {
     in: "body",
     optional: true,
-    exists: {
-      errorMessage: "Valid lastname required",
-      options: { checkFalsy: true },
-    },
+    isString: isStringOptions,
+    exists: existsOptions,
     trim: true,
   },
   password: {
-    optional: true,
     in: "body",
-    isLength: {
-      errorMessage: "Password must be atleast 8 characters",
-      options: { min: 8 },
-    },
-    exists: {
-      checkFalsy: true,
-    },
-    trim: true,
+    optional: true,
+    isLength: passwordLengthOptions,
+    isString: isStringOptions,
+    exists: existsOptions,
   },
 });
 
@@ -89,22 +85,16 @@ const loginSchema = checkSchema({
   email: {
     in: "body",
     optional: false,
-    isEmail: {
-      errorMessage: "Valid email required",
-    },
+    isEmail: isEmailOptions,
+    exists: existsOptions,
     normalizeEmail: true,
     trim: true,
-    toLowerCase: true,
   },
   password: {
-    optional: false,
     in: "body",
-    exists: {
-      checkFalsy: true,
-    },
-    isString: {
-      errorMessage: "Password must be a string",
-    },
+    optional: false,
+    exists: existsOptions,
+    isString: isStringOptions,
   },
 });
 

@@ -1,6 +1,6 @@
 const { validationResult, matchedData } = require("express-validator");
-const { InputValidationError } = require("../../../utils/errors/index");
-const logger = require("../../../utils/logger");
+const { InputValidationError } = require("../../utils/errors/index");
+const logger = require("../../utils/logger");
 
 function validateSchema(req, res, next) {
   try {
@@ -52,25 +52,32 @@ function validateSchema(req, res, next) {
 
     /**
      * If any unexpected keys exists, we want to notify client instead of ignoring it.
-     * This way client wont break their head on why something is not working as expected.
+     * This way client wont break their head on why something is not working as they expected.
      */
     if (
       extraBodyKeys.length > 0 ||
       extraParamKeys.length > 0 ||
       extraQueryKeys.length > 0
     ) {
-      const errorObject = {
-        message: "Unexpected keys passed in the request",
-        locations: {
-          ...(extraBodyKeys.length > 0 ? { body: extraBodyKeys } : undefined),
-          ...(extraParamKeys.length > 0 ? { params: extraParamKeys } : undefined),
-          ...(extraQueryKeys.length > 0 ? { query: extraQueryKeys } : undefined),
-        },
-      };
-      throw new InputValidationError(
-        errorObject.message,
-        errorObject.locations
+      const extraKeys = [];
+      extraKeys.push(
+        ...extraQueryKeys.map((key) => {
+          return { key: key, location: "query" };
+        })
       );
+      extraKeys.push(
+        ...extraParamKeys.map((key) => {
+          return { key: key, location: "params" };
+        })
+      );
+      extraKeys.push(
+        ...extraBodyKeys.map((key) => {
+          return { key: key, location: "body" };
+        })
+      );
+      throw new InputValidationError("Unexpected keys passed in the request", {
+        unexpectedKeys: extraKeys,
+      });
     }
 
     // replacing request with cleaned and sanitized data.

@@ -1,5 +1,11 @@
 const { checkSchema } = require("express-validator");
 
+const minimumIntValueOptions = {
+  options: {
+    min: 1,
+  },
+}
+
 const urlIdSchema = checkSchema({
   id: {
     in: "params",
@@ -12,21 +18,13 @@ const paginationSchema = checkSchema({
   page: {
     in: ["query"],
     optional: true,
-    isInt: {
-      options: {
-        min: 1,
-      },
-    },
+    isInt: minimumIntValueOptions,
     toInt: true,
   },
   size: {
     in: ["query"],
     optional: true,
-    isInt: {
-      options: {
-        min: 1,
-      },
-    },
+    isInt: minimumIntValueOptions,
     toInt: true,
   },
 });

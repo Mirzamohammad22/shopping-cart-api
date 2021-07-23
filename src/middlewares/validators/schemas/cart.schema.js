@@ -1,18 +1,22 @@
 const { checkSchema } = require("express-validator");
+const {INPUT_VALIDATOR_ERROR_MESSAGES} = require("../../../utils/constants")
 
-
-const isIntErrorMessage = {
-  errorMessage: "Value must be an integer",
+const isIntOptions = {
+  errorMessage: INPUT_VALIDATOR_ERROR_MESSAGES.isInt,
 };
-const minimumQuantityMessage = {
-  errorMessage: "Integer required with a minimum value of 1",
+
+const minimumQuantityOptions = {
+  errorMessage: "Integer value required (Minimum value: 1)",
+  options: {
+    min: 1,
+  }
 };
 
 const listCartItemSchema = checkSchema({
   cartId: {
     in: ["params"],
     optional: false,
-    isInt: isIntErrorMessage,
+    isInt: isIntOptions,
     toInt: true,
   },
 });
@@ -21,22 +25,19 @@ const addCartItemSchema = checkSchema({
   cartId: {
     in: ["params"],
     optional: false,
-    isInt: isIntErrorMessage,
+    isInt: isIntOptions,
     toInt: true,
   },
   itemId: {
     in: ["body"],
     optional: false,
-    isInt: isIntErrorMessage,
+    isInt: isIntOptions,
     toInt: true,
   },
   quantity: {
     in: ["body"],
     optional: true,
-    isInt: {
-      min: 1,
-      minimumQuantityMessage,
-    },
+    isInt: minimumQuantityOptions,
     toInt: true,
   },
 });
@@ -46,13 +47,13 @@ const deleteCartItemSchema = checkSchema({
   cartId: {
     in: ["params"],
     optional: false,
-    isInt: isIntErrorMessage,
+    isInt: isIntOptions,
     toInt: true,
   },
   itemId: {
     in: ["params"],
     optional: false,
-    isInt: isIntErrorMessage,
+    isInt: isIntOptions,
     toInt: true,
   },
 });
@@ -61,24 +62,19 @@ const updateCartItemSchema = checkSchema({
   cartId: {
     in: ["params"],
     optional: false,
-    isInt: isIntErrorMessage,
+    isInt: isIntOptions,
     toInt: true,
   },
   itemId: {
     in: ["params"],
     optional: false,
-    isInt: isIntErrorMessage,
+    isInt: isIntOptions,
     toInt: true,
   },
   quantity: {
     in: ["body"],
     optional: false,
-    isInt: {
-      options: {
-        min: 1,
-      },
-      minimumQuantityMessage,
-    },
+    isInt: minimumQuantityOptions,
     toInt: true,
   },
 });
