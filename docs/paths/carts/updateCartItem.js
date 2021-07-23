@@ -3,21 +3,21 @@ module.exports = {
     tags: ["Cart Endpoints"],
     summary: "Update item in cart",
     security: [
-        {
-          BearerAuth: [],
-        },
-      ],
+      {
+        BearerAuth: [],
+      },
+    ],
     description:
       "Update item in the specified cart using the details provided in the request body. This endpoint can only be accessed by the user himself using the auth token for authorization.",
     operationId: "updateCartItem",
     parameters: [
-        {
-          $ref: "#/components/parameters/cartId",
-        },
-        {
-          $ref: "#/components/parameters/itemId",
-        },
-      ],
+      {
+        $ref: "#/components/parameters/cartId",
+      },
+      {
+        $ref: "#/components/parameters/itemId",
+      },
+    ],
     requestBody: {
       description: "Details of the item to be updated in the cart",
       required: true,

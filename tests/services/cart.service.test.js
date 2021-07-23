@@ -1,6 +1,4 @@
-const {
-  ForeignKeyConstraintError,
-} = require("sequelize");
+const { ForeignKeyConstraintError } = require("sequelize");
 const { makeMockModels } = require("sequelize-jest-helpers");
 const {
   ResourceNotFoundError,
@@ -69,7 +67,7 @@ describe("cartService", () => {
       mockModels.Cart.create = jest.fn().mockRejectedValue(error);
       try {
         // When
-        const result = await cartService.createCart(3);
+        await cartService.createCart(3);
       } catch (err) {
         // Then
         expect(err).toBe(error);
@@ -95,7 +93,7 @@ describe("cartService", () => {
       mockModels.Cart.findAll = jest.fn().mockResolvedValue([]);
       try {
         // When
-        const result = await cartService.listUserCarts(1);
+        await cartService.listUserCarts(1);
       } catch (err) {
         // Then
         expect(err.name).toBe(ResourceNotFoundError.name);
@@ -149,9 +147,7 @@ describe("cartService", () => {
         .mockResolvedValue(cartServiceFixtures.findByPkItem);
       mockModels.CartItem.findOrCreate = jest
         .fn()
-        .mockResolvedValue(
-          cartServiceFixtures.findOrCreateCartItemCeated
-        );
+        .mockResolvedValue(cartServiceFixtures.findOrCreateCartItemCeated);
       mockModels.Item.decrement = jest.fn().mockResolvedValue([[null, 1]]);
 
       // When
@@ -167,7 +163,7 @@ describe("cartService", () => {
         .mockResolvedValue(cartServiceFixtures.findByPkItem);
       try {
         // When
-        const result = await cartService.addCartItem(
+        await cartService.addCartItem(
           1,
           4,
 
@@ -183,7 +179,7 @@ describe("cartService", () => {
       mockModels.Item.findByPk = jest.fn().mockResolvedValue(null);
       try {
         // When
-        const result = await cartService.addCartItem(1, 4, 10);
+        await cartService.addCartItem(1, 4, 10);
       } catch (err) {
         // Then
         expect(err.name).toEqual(ResourceNotFoundError.name);
@@ -214,7 +210,7 @@ describe("cartService", () => {
 
       try {
         // When
-        const result = await cartService.updateCartItem(1, 4, 10);
+        await cartService.updateCartItem(1, 4, 10);
       } catch (err) {
         // Then
         expect(err.name).toEqual(ResourceNotFoundError.name);

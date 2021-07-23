@@ -4,7 +4,7 @@ const minimumIntValueOptions = {
   options: {
     min: 1,
   },
-}
+};
 
 const urlIdSchema = checkSchema({
   id: {

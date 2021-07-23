@@ -86,12 +86,12 @@ class UserService {
       throw new LoginError("Email not registered");
     }
     logger.debug("userFound:", user);
-    const password_valid = await this.passwordHasher.compare(
+    const passwordValid = await this.passwordHasher.compare(
       password,
       user.password
     );
-    logger.debug("PASSWORD VALID:", password_valid);
-    if (!password_valid) {
+    logger.debug("PASSWORD VALID:", passwordValid);
+    if (!passwordValid) {
       throw new LoginError("Invalid credentials");
     }
     const token = await this.jwt.sign(

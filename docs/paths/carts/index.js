@@ -15,5 +15,5 @@ module.exports = {
   "/carts/{cartId}/items/{itemId}/": {
     ...updateCartItem,
     ...deleteCartItem,
-  }
+  },
 };

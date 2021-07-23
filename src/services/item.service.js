@@ -10,7 +10,9 @@ class ItemService {
     const attributesToExclude = ["createdAt", "updatedAt"];
     const filter = {
       // where clause added only if category given
-      ...(category !== undefined ? { where: { category: category } }: undefined),
+      ...(category !== undefined
+        ? { where: { category: category } }
+        : undefined),
       limit: limit,
       offset: offset,
       attributes: {

@@ -3,11 +3,12 @@ module.exports = {
     tags: ["Cart Endpoints"],
     summary: "Get all cart items",
     security: [
-        {
-          BearerAuth: [],
-        },
-      ],
-    description: "Get a list of all items in the specified cart. This endpoint can only be accessed by the user himself using the auth token for authorization.",
+      {
+        BearerAuth: [],
+      },
+    ],
+    description:
+      "Get a list of all items in the specified cart. This endpoint can only be accessed by the user himself using the auth token for authorization.",
     operationId: "getCartItems",
     parameters: [
       {

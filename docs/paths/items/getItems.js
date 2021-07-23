@@ -55,10 +55,10 @@ module.exports = {
           },
         },
       },
-      400:{
+      400: {
         $ref: "#/components/responses/400",
       },
-      404:{
+      404: {
         $ref: "#/components/responses/404",
       },
       500: {

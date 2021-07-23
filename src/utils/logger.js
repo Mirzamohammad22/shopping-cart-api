@@ -9,7 +9,7 @@ const levels = {
 };
 
 const level = () => {
-  const env = process.env.NODE_ENV || "development";
+  const env = process.env.NODE_ENV;
   const isDevelopment = env === "development";
   return isDevelopment ? "debug" : "info";
 };
@@ -28,14 +28,14 @@ const format = winston.format.combine(
   winston.format.errors({ stack: true }),
   winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss:ms" }),
   winston.format.colorize({ all: true }),
-  winston.format.printf(
-    (info) => `${info.timestamp} ${info.level}: ${info.message} \n${info.stack? info.stack: ''}`
-  )
+  winston.format.printf((info) => {
+    return `${info.timestamp} ${info.level}: ${info.message} \n${
+      info.stack ? info.stack : ""
+    }`;
+  })
 );
 
-const transports = [
-  new winston.transports.Console(),
-];
+const transports = [new winston.transports.Console()];
 
 const logger = winston.createLogger({
   level: level(),

@@ -5,9 +5,7 @@ const { makeMockModels } = require("sequelize-jest-helpers");
 const { ResourceNotFoundError } = require("../../src/utils/errors/index");
 const itemServiceFixtures = require("./fixtures/item.service.fixture");
 
-const mockModels = makeMockModels(
-  { Item: { findAndCountAll: undefined } },
-);
+const mockModels = makeMockModels({ Item: { findAndCountAll: undefined } });
 
 const itemService = new ItemService(mockModels.Item);
 
@@ -18,10 +16,10 @@ describe("Item Service", () => {
       const error = new Sequelize.SequelizeScopeError("No result");
       mockModels.Item.findAndCountAll = jest.fn().mockRejectedValue(error);
       try {
-        //when
-        const result = await itemService.listItems();
+        // when
+        await itemService.listItems();
       } catch (err) {
-        //then
+        // then
         expect(err.name).toEqual(error.name);
       }
     });
@@ -45,8 +43,7 @@ describe("Item Service", () => {
         .mockResolvedValue(itemServiceFixtures.findAndCountAllItemEmptyMatch);
       try {
         // When
-        const result = await itemService.listItems();
-
+        await itemService.listItems();
       } catch (err) {
         // Then
         expect(err.name).toBe(ResourceNotFoundError.name);

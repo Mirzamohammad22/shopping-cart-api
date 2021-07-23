@@ -1,23 +1,23 @@
 const { checkSchema } = require("express-validator");
-const {INPUT_VALIDATOR_ERROR_MESSAGES} = require('../../../utils/constants')
+const { INPUT_VALIDATOR_ERROR_MESSAGES } = require("../../../utils/constants");
 
 const passwordLengthOptions = {
   errorMessage: "Password must be atleast 8 characters",
   options: { min: 8 },
-}
+};
 
 const isEmailOptions = {
   errorMessage: "Valid email required",
-}
+};
 
 const existsOptions = {
   errorMessage: INPUT_VALIDATOR_ERROR_MESSAGES.validValue,
   options: { checkFalsy: true },
-}
+};
 
 const isStringOptions = {
-  errorMessage: INPUT_VALIDATOR_ERROR_MESSAGES.isString
-}
+  errorMessage: INPUT_VALIDATOR_ERROR_MESSAGES.isString,
+};
 
 const createUserSchema = checkSchema({
   email: {
@@ -44,7 +44,7 @@ const createUserSchema = checkSchema({
   password: {
     in: "body",
     optional: false,
-    isLength:passwordLengthOptions,
+    isLength: passwordLengthOptions,
     isString: isStringOptions,
     exists: existsOptions,
   },

@@ -21,8 +21,7 @@ module.exports = {
         minimum: 1,
         default: 5,
       },
-      description:
-        "The numbers of items to return per page",
+      description: "The numbers of items to return per page",
     },
     userId: {
       name: "userId",

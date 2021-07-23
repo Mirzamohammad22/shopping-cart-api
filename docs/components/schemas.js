@@ -174,29 +174,29 @@ module.exports = {
       properties: {
         error: {
           type: "object",
-          properties:{
-            message:{
-              type:"string"
-            }
-          }
-        }
-      }
+          properties: {
+            message: {
+              type: "string",
+            },
+          },
+        },
+      },
     },
     errorMessageWithDetails: {
       type: "object",
       properties: {
         error: {
           type: "object",
-          properties:{
-            message:{
-              type:"string"
+          properties: {
+            message: {
+              type: "string",
             },
-            details:{
-              type:"object"
-            }
-          }
-        }
-      }
-    }
+            details: {
+              type: "object",
+            },
+          },
+        },
+      },
+    },
   },
 };

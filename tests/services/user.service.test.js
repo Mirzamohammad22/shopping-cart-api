@@ -8,16 +8,14 @@ const {
 } = require("../../src/utils/errors/index");
 
 const userServiceFixtures = require("./fixtures/user.service.fixture");
-const mockModels = makeMockModels(
-  {
-    User: {
-      findAll: undefined,
-      findByPk: undefined,
-      findOrCreate: undefined,
-      findOne: undefined,
-    },
+const mockModels = makeMockModels({
+  User: {
+    findAll: undefined,
+    findByPk: undefined,
+    findOrCreate: undefined,
+    findOne: undefined,
   },
-);
+});
 const mockedPasswordHasher = {
   verify: undefined,
   compare: undefined,
@@ -55,7 +53,7 @@ describe("UserService", () => {
 
       try {
         // When
-        const result = await userService.hashPassword(password, 10);
+        await userService.hashPassword(password, 10);
       } catch (err) {
         // Then
         expect(err).toBe(hashError);
@@ -69,9 +67,7 @@ describe("UserService", () => {
         userServiceFixtures.createUserData;
       mockModels.User.findOrCreate = jest
         .fn()
-        .mockResolvedValue(
-          userServiceFixtures.findOrCreateUserCreated
-        );
+        .mockResolvedValue(userServiceFixtures.findOrCreateUserCreated);
 
       // When
       const result = await userService.createUser(
@@ -82,8 +78,7 @@ describe("UserService", () => {
       );
 
       // Then
-      const expected =
-        userServiceFixtures.findOrCreateUserCreated[0].id;
+      const expected = userServiceFixtures.findOrCreateUserCreated[0].id;
       expect(result).toBe(expected);
     });
 
@@ -98,12 +93,7 @@ describe("UserService", () => {
       try {
         // When
 
-        const result = await userService.createUser(
-          email,
-          password,
-          firstName,
-          lastName
-        );
+        await userService.createUser(email, password, firstName, lastName);
       } catch (err) {
         // Then
         expect(err.name).toBe(UserError.name);
@@ -116,7 +106,7 @@ describe("UserService", () => {
       mockModels.User.findByPk = jest.fn().mockResolvedValue(null);
       try {
         // When
-        const result = await userService.updateUser(1, {});
+        await userService.updateUser(1, {});
       } catch (err) {
         // Then
         expect(err.name).toBe(ResourceNotFoundError.name);
@@ -133,19 +123,16 @@ describe("UserService", () => {
         .mockResolvedValue(userServiceFixtures.findByPkUser);
       try {
         // When
-        const result = await userService.updateUser(1, {});
+        await userService.updateUser(1, {});
       } catch (err) {
         // Then
-
         expect(err.name).toBe(UserError.name);
       }
     });
 
     it("Should return true for successfull update", async () => {
       // Given
-      userServiceFixtures.findByPkUser.update = jest
-        .fn()
-        .mockResolvedValue({});
+      userServiceFixtures.findByPkUser.update = jest.fn().mockResolvedValue({});
       mockModels.User.findByPk = jest
         .fn()
         .mockResolvedValue(userServiceFixtures.findByPkUser);
@@ -169,7 +156,7 @@ describe("UserService", () => {
       mockedPasswordHasher.compare = jest.fn().mockResolvedValue(false);
       try {
         // When
-        const result = await userService.loginUser(email, password);
+        await userService.loginUser(email, password);
       } catch (err) {
         expect(err.name).toBe(LoginError.name);
       }
@@ -181,7 +168,7 @@ describe("UserService", () => {
       mockModels.User.findOne = jest.fn().mockResolvedValue(null);
       try {
         // When
-        const result = await userService.loginUser(email, password);
+        await userService.loginUser(email, password);
       } catch (err) {
         expect(err.name).toBe(LoginError.name);
       }
@@ -206,7 +193,6 @@ describe("UserService", () => {
   });
   describe("getUser", () => {
     it("Should return data for existing user", async () => {
-
       // Given
       mockModels.User.findByPk = jest
         .fn()
@@ -230,7 +216,7 @@ describe("UserService", () => {
       mockModels.User.findByPk = jest.fn().mockResolvedValue(null);
       try {
         // When
-        const result = await userService.getUser(3);
+        await userService.getUser(3);
       } catch (err) {
         // Then
         expect(err.name).toBe(ResourceNotFoundError.name);

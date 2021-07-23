@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const logger = require("../utils/logger");
-const {  AuthorizationError } = require("../utils/errors/index");
+const { AuthorizationError } = require("../utils/errors/index");
 const { StatusCodes } = require("http-status-codes");
 
 const jwtSecret = process.env.JWT_SECRET;

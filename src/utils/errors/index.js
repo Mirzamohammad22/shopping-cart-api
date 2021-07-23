@@ -29,7 +29,7 @@ class CartError extends BaseError {
 }
 
 class UserError extends BaseError {
-  constructor(message , statusCode = StatusCodes.BAD_REQUEST) {
+  constructor(message, statusCode = StatusCodes.BAD_REQUEST) {
     super(message, statusCode);
     this.name = this.constructor.name;
   }
@@ -42,10 +42,7 @@ class AuthorizationError extends BaseError {
   }
 }
 class LoginError extends BaseError {
-  constructor(
-    message,
-    statusCode = StatusCodes.UNAUTHORIZED
-  ) {
+  constructor(message, statusCode = StatusCodes.UNAUTHORIZED) {
     super(message, statusCode);
     this.name = this.constructor.name;
   }

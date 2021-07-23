@@ -1,11 +1,12 @@
 const { Router } = require("express");
-const router = Router();
 const userController = require("../controllers/user.controller");
 const userValidationSchema = require("../middlewares/validators/schemas/user.schema.js");
 const validateSchema = require("../middlewares/validators/schema-validator");
 const errorHandler = require("../middlewares/error-handler.middleware");
 const defaultValidationSchema = require("../middlewares/validators/schemas/default.schema");
 const authenticateJwt = require("../middlewares/jwt.middleware");
+const router = new Router();
+
 router.post(
   "/",
   userValidationSchema.createUserSchema,

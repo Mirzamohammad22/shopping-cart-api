@@ -1,10 +1,11 @@
 const { Router } = require("express");
-const router = Router();
+
 const errorHandler = require("../middlewares/error-handler.middleware");
 const Authenticate = require("../middlewares/jwt.middleware");
 const cartController = require("../controllers/cart.controller");
 const cartValidationSchema = require("../middlewares/validators/schemas/cart.schema");
 const validateSchema = require("../middlewares/validators/schema-validator");
+const router = new Router();
 
 router.use(Authenticate);
 

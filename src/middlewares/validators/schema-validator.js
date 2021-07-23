@@ -24,19 +24,16 @@ function validateSchema(req, res, next) {
     });
 
     logger.debug(
-      `RawRequestQuery:${JSON.stringify(req.query)}
-     \n
-     ValidatedRequestQuery:${JSON.stringify(cleanedQuery)}`
+      `RawRequestQuery:${JSON.stringify(req.query)}\t` +
+        `ValidatedRequestQuery:${JSON.stringify(cleanedQuery)}`
     );
     logger.debug(
-      `RawRequestParams:${JSON.stringify(req.params)}
-    \n
-    ValidatedRequestParams:${JSON.stringify(cleanedParams)}`
+      `RawRequestParams:${JSON.stringify(req.params)}\t` +
+        `ValidatedRequestParams:${JSON.stringify(cleanedParams)}`
     );
     logger.debug(
-      `RawRequestBody:${JSON.stringify(req.body)}
-    \n
-    ValidatedRequestBody:${JSON.stringify(cleanedBody)}`
+      `RawRequestBody:${JSON.stringify(req.body)}\t` +
+        `ValidatedRequestBody:${JSON.stringify(cleanedBody)}`
     );
 
     // Getting unexpected keys being passed along with the request

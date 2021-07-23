@@ -3,18 +3,18 @@ module.exports = {
     tags: ["Cart Endpoints"],
     summary: "Add item to cart",
     security: [
-        {
-          BearerAuth: [],
-        },
-      ],
+      {
+        BearerAuth: [],
+      },
+    ],
     description:
       "Add item to the specified cart using the details provided in the request body. This endpoint can only be accessed by the user himself using the auth token for authorization.",
     operationId: "createCartItem",
     parameters: [
-        {
-          $ref: "#/components/parameters/cartId",
-        },
-      ],
+      {
+        $ref: "#/components/parameters/cartId",
+      },
+    ],
     requestBody: {
       description: "Details of the item to be added to the cart",
       required: true,

@@ -1,7 +1,7 @@
 const express = require("express");
 const logger = require("./utils/logger");
 const morgan = require("./middlewares/morgan.middleware");
-const helmet = require("helmet")
+const helmet = require("helmet");
 const userRouter = require("./routes/user.router");
 const itemRouter = require("./routes/item.router");
 const cartRouter = require("./routes/cart.router");
@@ -39,4 +39,3 @@ app.use("/items", itemRouter);
 app.use("/carts", cartRouter);
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(docs, options));
-
