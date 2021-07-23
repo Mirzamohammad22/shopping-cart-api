@@ -10,7 +10,8 @@
     "db-migrate": "sequelize  --config ./config/db.config.js db:migrate",
     "db-undo-migrate": "sequelize --config ./config/db.config.js db:migrate:undo",
     "db-undo-migrate:all": "sequelize --config ./config/db.config.js db:migrate:undo:all",
-    "db-seed-data": "sequelize --config ./config/db.config.js db:seed:all"
+    "db-seed-data": "sequelize --config ./config/db.config.js db:seed:all",
+    "lint": "eslint --fix ."
   },
   "repository": {
     "type": "git",

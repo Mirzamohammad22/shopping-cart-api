@@ -8,7 +8,7 @@ module.exports = {
       },
     ],
     description:
-      "Delete specified item from the specified cart. This endpoint can only be accessed by the user himself using the auth token for authorization.",
+      "Delete specified item from the specified cart. This endpoint can only be accessed by the cart owner using the Auth token.",
     operationId: "deleteCartItem",
     parameters: [
       {

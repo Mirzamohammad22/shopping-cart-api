@@ -14,49 +14,8 @@ module.exports = {
         },
       },
     },
-    invalidCredentials: {
-      description:
-        "***Unauthorized*** - The credentials provided for login are invalid.",
-      content: {
-        "application/json": {
-          schema: {
-            $ref: "#/components/schemas/errorMessage",
-          },
-        },
-      },
-    },
-    invalidCartItemInput: {
-      description:
-        "***Bad Request*** - The request is malformed. The response contains more details about the error.",
-      content: {
-        "application/json": {
-          schema: {
-            type: "object",
-            properties: {
-              error: {
-                type: "object",
-                properties: {
-                  message: {
-                    type: "string",
-                    description: "Error message",
-                    example: "Invalid input",
-                  },
-                  details: {
-                    type: "array",
-                    description: "Input validation errors",
-                    items: {
-                      $ref: "#/components/schemas/invalidCartItemInput",
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
     401: {
-      description: "***Unauthorized*** - The auth bearer token is missing.",
+      description: "***Unauthorized*** - The auth token is missing or invalid.",
       content: {
         "application/json": {
           schema: {
@@ -93,68 +52,6 @@ module.exports = {
         "application/json": {
           schema: {
             $ref: "#/components/schemas/errorMessage",
-          },
-        },
-      },
-    },
-    user: {
-      description: "***OK*** - Returns the details of the user.",
-      content: {
-        "application/json": {
-          schema: {
-            type: "object",
-            properties: {
-              data: {
-                type: "object",
-                properties: {
-                  id: {
-                    type: "integer",
-                    description: "ID of the user",
-                    example: 123,
-                  },
-                  firstName: {
-                    type: "string",
-                    description: "User's first name",
-                    example: "John",
-                  },
-                  lastName: {
-                    type: "string",
-                    description: "User's last name",
-                    example: "Doe",
-                  },
-                  email: {
-                    type: "email",
-                    description: "User's email address",
-                    example: "john.doe@gmail.com",
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    userCarts: {
-      description:
-        "***OK*** - Returns a list of carts that belong to the user.",
-      content: {
-        "application/json": {
-          schema: {
-            type: "object",
-            properties: {
-              data: {
-                type: "object",
-                properties: {
-                  carts: {
-                    description: "List of user carts",
-                    type: "array",
-                    items: {
-                      $ref: "#/components/schemas/Cart",
-                    },
-                  },
-                },
-              },
-            },
           },
         },
       },

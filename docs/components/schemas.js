@@ -51,7 +51,7 @@ module.exports = {
         },
       },
     },
-    UserLoginInput: {
+    userLoginInput: {
       type: "object",
       properties: {
         email: {
@@ -67,7 +67,7 @@ module.exports = {
       },
       required: ["email", "password"],
     },
-    Cart: {
+    cart: {
       type: "object",
       properties: {
         id: {
@@ -76,18 +76,18 @@ module.exports = {
           example: "123",
         },
         createdAt: {
-          type: "integer",
-          description: "Creation time (epoch)",
-          example: "1626894160",
+          type: "string",
+          description: "Creation time",
+          example: "2021-07-23T20:07:20.000Z",
         },
         updatedAt: {
-          type: "integer",
-          description: "Updation time in (epoch)",
-          example: "1626894180",
+          type: "string",
+          description: "Updation time",
+          example: "2021-07-23T20:07:20.000Z",
         },
       },
     },
-    Item: {
+    item: {
       type: "object",
       properties: {
         id: {
@@ -122,23 +122,28 @@ module.exports = {
         },
       },
     },
-    CartItem: {
+    cartItem: {
       type: "object",
       properties: {
         id: {
           type: "integer",
-          description: "ID of the item in the cart",
+          description: "ID of the item",
           example: 123,
         },
         name: {
           type: "string",
-          description: "Name of the item in the cart",
+          description: "Name of the item",
           example: "Laptop",
         },
         quantity: {
           type: "integer",
-          description: "Quantity of the item present in the cart",
+          description: "Quantity of the item",
           example: 100,
+        },
+        price: {
+          type: "integer",
+          description: "Price of the item",
+          example: "250",
         },
       },
     },

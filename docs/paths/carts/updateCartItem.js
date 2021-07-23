@@ -8,7 +8,7 @@ module.exports = {
       },
     ],
     description:
-      "Update item in the specified cart using the details provided in the request body. This endpoint can only be accessed by the user himself using the auth token for authorization.",
+      "Update item in the specified cart using the details provided in the request body. This endpoint can only be accessed by the cart owner using the Auth token.",
     operationId: "updateCartItem",
     parameters: [
       {
@@ -39,7 +39,7 @@ module.exports = {
         description: "***No Content*** - Updated cart successfully.",
       },
       400: {
-        $ref: "#/components/responses/invalidCartItemInput",
+        $ref: "#/components/responses/400",
       },
       401: {
         $ref: "#/components/responses/401",

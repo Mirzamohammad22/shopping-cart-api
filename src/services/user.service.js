@@ -94,11 +94,9 @@ class UserService {
     if (!passwordValid) {
       throw new LoginError("Invalid credentials");
     }
-    const token = await this.jwt.sign(
-      { id: user.id, email: user.email },
-      jwtSecret,
-      { expiresIn: constants.DAY_IN_SECONDS }
-    );
+    const token = await this.jwt.sign({ id: user.id }, jwtSecret, {
+      expiresIn: constants.DAY_IN_SECONDS,
+    });
 
     logger.debug("TOKEN:", token);
     return token;

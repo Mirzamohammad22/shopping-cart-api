@@ -8,7 +8,7 @@ module.exports = {
       },
     ],
     description:
-      "Get a list of all items in the specified cart. This endpoint can only be accessed by the user himself using the auth token for authorization.",
+      "Get a list of all items in the specified cart. This endpoint can only be accessed by the cart owner using the Auth token.",
     operationId: "getCartItems",
     parameters: [
       {
@@ -27,7 +27,7 @@ module.exports = {
                   type: "array",
                   description: "List of the items in the cart",
                   items: {
-                    $ref: "#/components/schemas/CartItem",
+                    $ref: "#/components/schemas/cartItem",
                   },
                 },
               },

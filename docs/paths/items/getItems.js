@@ -2,7 +2,8 @@ module.exports = {
   get: {
     tags: ["Item Endpoints"],
     summary: "Get all items",
-    description: "Get a list of items ",
+    description:
+      "Get a list of all items or items belonging to a certain category.",
     operationId: "getItems",
     parameters: [
       {
@@ -11,7 +12,7 @@ module.exports = {
         schema: {
           type: "string",
         },
-        description: "Get a list of items belonging to the category provided",
+        description: "Filter the list of items based on category",
       },
       {
         $ref: "#/components/parameters/pageParam",
@@ -37,7 +38,7 @@ module.exports = {
                   type: "array",
                   description: "List of the items",
                   items: {
-                    $ref: "#/components/schemas/Item",
+                    $ref: "#/components/schemas/item",
                   },
                 },
                 totalPages: {

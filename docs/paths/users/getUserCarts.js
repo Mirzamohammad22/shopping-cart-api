@@ -8,7 +8,7 @@ module.exports = {
       },
     ],
     description:
-      "Get a list of carts of a user based on the id provided. This endpoint can only be accessed by the user himself using the auth token for authorization.",
+      "Get a list of carts of a user based on the id provided. This endpoint requires the requested user's Auth token.",
     operationId: "getUserCarts",
     parameters: [
       {
@@ -17,7 +17,29 @@ module.exports = {
     ],
     responses: {
       200: {
-        $ref: "#/components/responses/userCarts",
+        description:
+          "***OK*** - Returns a list of carts that belong to the user.",
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                data: {
+                  type: "object",
+                  properties: {
+                    carts: {
+                      description: "List of user carts",
+                      type: "array",
+                      items: {
+                        $ref: "#/components/schemas/cart",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       },
       401: {
         $ref: "#/components/responses/401",

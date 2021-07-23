@@ -8,7 +8,7 @@ module.exports = {
     ],
     summary: "Create a cart",
     description:
-      "Create a cart for a user using data in Auth token. This endpoint can only be accessed by the user himself using the auth token for authorization.",
+      "Create a cart for a user identified using the auth token provided.",
     operationId: "createCart",
     responses: {
       200: {
@@ -35,9 +35,6 @@ module.exports = {
       },
       401: {
         $ref: "#/components/responses/401",
-      },
-      403: {
-        $ref: "#/components/responses/403",
       },
       500: {
         $ref: "#/components/responses/500",

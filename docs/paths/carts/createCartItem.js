@@ -8,7 +8,7 @@ module.exports = {
       },
     ],
     description:
-      "Add item to the specified cart using the details provided in the request body. This endpoint can only be accessed by the user himself using the auth token for authorization.",
+      "Add item to the specified cart using the details provided in the request body. This endpoint can only be accessed by the cart owner using the Auth token.",
     operationId: "createCartItem",
     parameters: [
       {
@@ -32,19 +32,11 @@ module.exports = {
       },
     },
     responses: {
-      200: {
-        description: "***OK*** - Item added to cart successfully.",
-        content: {
-          "plain/text": {
-            schema: {
-              type: "string",
-              example: "OK",
-            },
-          },
-        },
+      204: {
+        description: "***No Content*** - Item added to cart successfully.",
       },
       400: {
-        $ref: "#/components/responses/invalidCartItemInput",
+        $ref: "#/components/responses/400",
       },
       401: {
         $ref: "#/components/responses/401",

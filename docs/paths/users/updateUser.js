@@ -8,7 +8,7 @@ module.exports = {
       },
     ],
     description:
-      "Update the details of a user based on the id provided. This endpoint can only be accessed by the user himself using the auth token for authorization.",
+      "Update the details of a user based on the id provided. This endpoint requires the requested user's Auth token.",
     operationId: "updateUser",
     parameters: [
       {
