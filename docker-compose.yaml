@@ -4,6 +4,7 @@ services:
     build:
       context: .
       args:
+        # - NODE_ENV=production to run in production mode
         - NODE_ENV=development
     command: nodemon ./src/server.js
     ports:
