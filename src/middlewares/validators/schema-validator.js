@@ -77,7 +77,7 @@ function validateSchema(req, res, next) {
       });
     }
 
-    // replacing request with cleaned and sanitized data.
+    // Replacing request with cleaned and sanitized data
     req.body = cleanedBody;
     req.params = cleanedParams;
     req.query = cleanedQuery;

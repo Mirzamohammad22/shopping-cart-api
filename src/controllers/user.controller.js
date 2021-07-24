@@ -27,7 +27,7 @@ async function createUser(req, res, next) {
     const { email, password, firstName, lastName } = req.body;
     const hashedPassword = await userService.hashPassword(password, 10);
 
-    logger.info(`Creating User with Email:${email}`);
+    logger.info(`Creating user with email: ${email}`);
     const userId = await userService.createUser(
       email,
       hashedPassword,
@@ -50,7 +50,7 @@ async function loginUser(req, res, next) {
   try {
     const { email, password } = req.body;
 
-    logger.info(`Login User with Email:${email}`);
+    logger.info(`Login user with email: ${email}`);
 
     const jwt = await userService.loginUser(email, password);
 
@@ -77,7 +77,7 @@ async function updateUser(req, res, next) {
 
     isAuthorized(requestUserId, authUserId);
 
-    logger.info(`Updating User with id:${authUserId}`);
+    logger.info(`Updating user with id: ${authUserId}`);
     // Hash password if given in the req.body
     if (userDetails.password) {
       userDetails.password = await userService.hashPassword(
@@ -100,7 +100,7 @@ async function getUser(req, res, next) {
 
     isAuthorized(requestUserId, authUserId);
 
-    logger.info(`Getting info for User with id:${authUserId}`);
+    logger.info(`Getting info for user with id: ${authUserId}`);
     const user = await userService.getUser(requestUserId);
 
     const responseData = {
@@ -121,7 +121,7 @@ async function listUserCarts(req, res, next) {
 
     isAuthorized(requestUserId, authUserId);
 
-    logger.info(`Listing carts for User with id:${authUserId}`);
+    logger.info(`Listing carts for user with id: ${authUserId}`);
     const carts = await cartService.listUserCarts(requestUserId);
 
     const responseData = {
@@ -129,7 +129,6 @@ async function listUserCarts(req, res, next) {
         carts: carts,
       },
     };
-
     res.json(responseData);
   } catch (err) {
     next(err);

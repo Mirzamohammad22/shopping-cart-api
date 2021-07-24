@@ -1,12 +1,13 @@
 const express = require("express");
-const logger = require("./utils/logger");
-const morgan = require("./middlewares/morgan.middleware");
 const helmet = require("helmet");
+const swaggerUI = require("swagger-ui-express");
 const userRouter = require("./routes/user.router");
 const itemRouter = require("./routes/item.router");
 const cartRouter = require("./routes/cart.router");
-const swaggerUI = require("swagger-ui-express");
+const logger = require("./utils/logger");
+const morgan = require("./middlewares/morgan.middleware");
 const docs = require("../docs");
+const errorHandler = require("./middlewares/error-handler.middleware");
 
 const swaggerUiOptions = {
   defaultModelsExpandDepth: -1,
@@ -39,3 +40,4 @@ app.use("/items", itemRouter);
 app.use("/carts", cartRouter);
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(docs, options));
+app.use(errorHandler);

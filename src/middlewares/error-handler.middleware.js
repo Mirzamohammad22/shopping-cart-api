@@ -1,5 +1,6 @@
 const logger = require("../utils/logger");
 const { StatusCodes } = require("http-status-codes");
+
 module.exports = function errorHandler(err, req, res, next) {
   if (
     err.statusCode === undefined ||

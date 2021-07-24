@@ -13,9 +13,9 @@ async function authenticateJwt(req, res, next) {
     }
 
     const token = authHeader.split(" ")[1];
-    logger.debug(`Auth Header token:${token}`);
+    logger.debug(`Auth Header token: ${token}`);
     const authData = await jwt.verify(token, jwtSecret);
-    logger.debug(`Auth token data:${JSON.stringify(authData)}`);
+    logger.debug(`Auth token data: ${JSON.stringify(authData)}`);
     req.authData = authData;
     next();
   } catch (err) {

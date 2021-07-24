@@ -36,8 +36,8 @@ class UserService {
     if (!created) {
       throw new UserError("Email already registered");
     }
-    logger.debug(`User created:${JSON.stringify(user)}`);
-    logger.info(`Created User with email:${user.email} Successfully`);
+    logger.debug(`User created: ${JSON.stringify(user)}`);
+    logger.info(`Created user with email: ${user.email} successfully`);
     return user.id;
   }
 
@@ -52,7 +52,7 @@ class UserService {
       const updatedUser = await userToBeUpdated.update(details);
 
       logger.debug(updatedUser);
-      logger.info(`Updated User with id:${id} successfully`);
+      logger.info(`Updated user with id: ${id} successfully`);
       return true;
     } catch (err) {
       if (err instanceof UniqueConstraintError) {
@@ -85,12 +85,13 @@ class UserService {
     if (!user) {
       throw new LoginError("Email not registered");
     }
-    logger.debug("userFound:", user);
+
+    logger.debug(`User found for login: ${JSON.stringify(user)}`);
     const passwordValid = await this.passwordHasher.compare(
       password,
       user.password
     );
-    logger.debug("PASSWORD VALID:", passwordValid);
+    logger.debug(`Login attempt, password valid: ${passwordValid}`);
     if (!passwordValid) {
       throw new LoginError("Invalid credentials");
     }
@@ -98,7 +99,7 @@ class UserService {
       expiresIn: constants.DAY_IN_SECONDS,
     });
 
-    logger.debug("TOKEN:", token);
+    logger.debug(`Token generated after login: ${token}`);
     return token;
   }
 }

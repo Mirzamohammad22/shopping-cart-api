@@ -44,7 +44,6 @@ describe("UserService", () => {
       // Then
       expect(result).not.toBe("passwordabcd");
     });
-
     it("Should throw an error when hash gets rejected", async () => {
       // Given
       const hashError = new Error("HASH ERROR");
@@ -60,6 +59,7 @@ describe("UserService", () => {
       }
     });
   });
+
   describe("createUser", () => {
     it("Should return a Id for valid input", async () => {
       // Given
@@ -81,7 +81,6 @@ describe("UserService", () => {
       const expected = userServiceFixtures.findOrCreateUserCreated[0].id;
       expect(result).toBe(expected);
     });
-
     it("Should thow an error for registered email", async () => {
       // Given
       const { email, password, firstName, lastName } =
@@ -100,6 +99,7 @@ describe("UserService", () => {
       }
     });
   });
+
   describe("updateUser", () => {
     it("Should throw error for non-existing user", async () => {
       // Given
@@ -112,7 +112,6 @@ describe("UserService", () => {
         expect(err.name).toBe(ResourceNotFoundError.name);
       }
     });
-
     it("Should throw error for already registered email", async () => {
       // Given
       userServiceFixtures.findByPkUser.update = jest
@@ -129,7 +128,6 @@ describe("UserService", () => {
         expect(err.name).toBe(UserError.name);
       }
     });
-
     it("Should return true for successfull update", async () => {
       // Given
       userServiceFixtures.findByPkUser.update = jest.fn().mockResolvedValue({});
@@ -146,6 +144,7 @@ describe("UserService", () => {
       expect(result).toBe(true);
     });
   });
+
   describe("login", () => {
     it("Should throw error for invalid password", async () => {
       // Given
@@ -161,7 +160,6 @@ describe("UserService", () => {
         expect(err.name).toBe(LoginError.name);
       }
     });
-
     it("Should throw error for unregistered email", async () => {
       // Given
       const { email, password } = userServiceFixtures.createUserData;
@@ -173,7 +171,6 @@ describe("UserService", () => {
         expect(err.name).toBe(LoginError.name);
       }
     });
-
     it("Should return token for valid credentials", async () => {
       // Given
       const jwtToken = "jwttoken";
@@ -191,6 +188,7 @@ describe("UserService", () => {
       expect(result).toBe(jwtToken);
     });
   });
+
   describe("getUser", () => {
     it("Should return data for existing user", async () => {
       // Given
@@ -210,7 +208,6 @@ describe("UserService", () => {
       };
       expect(result).toEqual(expected);
     });
-
     it("Should throw error for non-existing user", async () => {
       // Given
       mockModels.User.findByPk = jest.fn().mockResolvedValue(null);

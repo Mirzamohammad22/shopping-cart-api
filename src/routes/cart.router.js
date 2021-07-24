@@ -1,6 +1,4 @@
 const { Router } = require("express");
-
-const errorHandler = require("../middlewares/error-handler.middleware");
 const Authenticate = require("../middlewares/jwt.middleware");
 const cartController = require("../controllers/cart.controller");
 const cartValidationSchema = require("../middlewares/validators/schemas/cart.schema");
@@ -34,7 +32,5 @@ router.patch(
   validateSchema,
   cartController.updateItemInCart
 );
-
-router.use(errorHandler);
 
 module.exports = router;

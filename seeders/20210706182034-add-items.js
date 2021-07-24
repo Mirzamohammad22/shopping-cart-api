@@ -15,7 +15,7 @@ module.exports = {
           updatedAt: new Date(),
         },
         {
-          name: "Xbox series x",
+          name: "Xbox series X",
           sku: 12345679,
           category: "consoles",
           price: 1500,
@@ -33,7 +33,7 @@ module.exports = {
           updatedAt: new Date(),
         },
         {
-          name: "Macbook pro",
+          name: "Macbook Pro",
           sku: 12545610,
           category: "laptops",
           price: 20000,
@@ -42,7 +42,7 @@ module.exports = {
           updatedAt: new Date(),
         },
         {
-          name: "Dell xps",
+          name: "Dell XPS",
           sku: 42345348,
           category: "laptops",
           price: 9000,
@@ -78,7 +78,7 @@ module.exports = {
           updatedAt: new Date(),
         },
         {
-          name: "Samsung s21",
+          name: "Samsung S21",
           sku: 10345238,
           category: "phones",
           price: 3000,

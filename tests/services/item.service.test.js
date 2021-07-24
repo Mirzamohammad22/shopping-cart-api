@@ -9,8 +9,8 @@ const mockModels = makeMockModels({ Item: { findAndCountAll: undefined } });
 
 const itemService = new ItemService(mockModels.Item);
 
-describe("Item Service", () => {
-  describe("Test listitems Method", () => {
+describe("ItemService", () => {
+  describe("listItems", () => {
     it("Should reject if model throws error", async () => {
       // Given
       const error = new Sequelize.SequelizeScopeError("No result");
@@ -35,8 +35,7 @@ describe("Item Service", () => {
       // Then
       expect(result).toEqual(itemServiceFixtures.listItemsData);
     });
-
-    it("Should reject if no data exists ", async () => {
+    it("Should reject if no data exists", async () => {
       // Given
       mockModels.Item.findAndCountAll = jest
         .fn()

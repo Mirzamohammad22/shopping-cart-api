@@ -61,12 +61,12 @@ class InputValidationError extends BaseError {
 }
 
 module.exports = {
-  ResourceNotFoundError: ResourceNotFoundError,
-  BaseError: BaseError,
-  ItemError: ItemError,
-  CartError: CartError,
-  UserError: UserError,
-  LoginError: LoginError,
+  ResourceNotFoundError,
+  BaseError,
+  ItemError,
+  CartError,
+  UserError,
+  LoginError,
   AuthorizationError,
-  InputValidationError: InputValidationError,
+  InputValidationError,
 };

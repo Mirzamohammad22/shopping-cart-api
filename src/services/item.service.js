@@ -9,7 +9,7 @@ class ItemService {
   async listItems(category = undefined, limit = 5, offset = 0) {
     const attributesToExclude = ["createdAt", "updatedAt"];
     const filter = {
-      // where clause added only if category given
+      // "where" clause added only if category given
       ...(category !== undefined
         ? { where: { category: category } }
         : undefined),
@@ -21,7 +21,7 @@ class ItemService {
     };
 
     const result = await this.itemModel.findAndCountAll(filter);
-    logger.debug(`Items Found:${result.rows.length}`);
+    logger.debug(`Items found: ${result.rows.length}`);
 
     if (result.rows.length === 0) {
       throw new ResourceNotFoundError("Items");

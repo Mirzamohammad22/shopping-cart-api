@@ -124,7 +124,7 @@ async function deleteItemFromCart(req, res, next) {
     const itemId = req.params.itemId;
     const userId = req.authData.id;
     await isCartOwner(cartId, userId);
-    logger.info(`Deleting itemId: ${itemId} from cartId:${cartId}`);
+    logger.info(`Deleting itemId: ${itemId} from cartId: ${cartId}`);
     await cartService.deleteCartItem(cartId, itemId);
     return res.sendStatus(StatusCodes.NO_CONTENT);
   } catch (err) {

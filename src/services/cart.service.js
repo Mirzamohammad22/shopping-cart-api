@@ -1,7 +1,6 @@
 const logger = require("../utils/logger");
 const { ResourceNotFoundError, ItemError } = require("../utils/errors/index");
 
-// TODO: move transactions from controller to service.
 class CartService {
   constructor(cartModel, cartItemModel, itemModel, sequelize) {
     this.cartModel = cartModel;
@@ -24,7 +23,7 @@ class CartService {
   }
 
   async #increaseItemStock(itemId, quantity, transaction) {
-    logger.debug(`Increasing stock of itemId:${itemId} by ${quantity}`);
+    logger.debug(`Increasing stock of itemId: ${itemId} by ${quantity}`);
     const item = await this.itemModel.increment("stock", {
       by: quantity,
       where: {
@@ -34,8 +33,9 @@ class CartService {
     });
     return item;
   }
+
   async #decreaseItemStock(itemId, quantity, transaction) {
-    logger.debug(`Decreasing stock of itemId:${itemId} by ${quantity}`);
+    logger.debug(`Decreasing stock of itemId: ${itemId} by ${quantity}`);
     const item = await this.itemModel.decrement("stock", {
       by: quantity,
       where: {
@@ -117,7 +117,7 @@ class CartService {
       });
       logger.debug(`cartItem: ${JSON.stringify(cartItem)} created:${created}`);
 
-      // cartItem found, not created.Incrementing quantity
+      // cartItem found, not created. Incrementing quantity of cartItem
       if (!created) {
         await this.cartItemModel.increment("quantity", {
           by: quantity,
@@ -130,7 +130,7 @@ class CartService {
         logger.debug(`cartItem quantity incremented by ${quantity}`);
       }
       logger.info(
-        `CartItem with cartId:${cartId},itemId:${itemId} with quantity:${quantity} added successfully`
+        `CartItem with cartId: ${cartId}, itemId: ${itemId} and quantity: ${quantity} added successfully`
       );
       await transaction.commit();
       return true;
@@ -188,10 +188,10 @@ class CartService {
         }
       );
 
-      logger.debug(`carItem updated:${JSON.stringify(cartItemUpdated)}`);
+      logger.debug(`cartItem updated: ${JSON.stringify(cartItemUpdated)}`);
 
       logger.info(
-        `CartItem with cartId:${cartId},itemId:${itemId} with quantity:${quantity} updated successfully`
+        `CartItem with cartId: ${cartId}, itemId: ${itemId} and quantity: ${quantity} updated successfully`
       );
       await transaction.commit();
       return true;
@@ -204,7 +204,6 @@ class CartService {
   async deleteCartItem(cartId, itemId) {
     const transaction = await this.sequelize.transaction();
     try {
-      // get cartItem
       const cartItem = await this.cartItemModel.findOne({
         where: {
           cartId: cartId,
@@ -212,17 +211,16 @@ class CartService {
         },
       });
 
-      // if found, add the quantity back to item stock
+      // If cartItem found, add the quantity back to item stock
       if (cartItem) {
         await this.#increaseItemStock(itemId, cartItem.quantity, transaction);
         await cartItem.destroy({ transaction: transaction });
         logger.info(
-          `CartItem with cartId:${cartId},itemId:${itemId} deleted successfully`
+          `cartItem with cartId: ${cartId}, itemId: ${itemId} deleted successfully`
         );
       }
-
       logger.info(
-        `CartItem with cartId:${cartId},itemId:${itemId} delete complete`
+        `cartItem with cartId: ${cartId}, itemId: ${itemId} delete complete`
       );
       await transaction.commit();
       return true;
