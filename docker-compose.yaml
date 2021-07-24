@@ -4,9 +4,10 @@ services:
     build:
       context: .
       args:
-        # - NODE_ENV=production to run in production mode
+        # - NODE_ENV=production
         - NODE_ENV=development
     command: nodemon ./src/server.js
+    # command: node ./src/server.js
     ports:
       - "3000:3000"
     env_file:
@@ -15,7 +16,7 @@ services:
       - mysql
       - redis
     volumes:
-      - node_modules:/usr/src/app/node_modules/
+      - /usr/src/app/node_modules/
       - ./:/usr/src/app
     networks:
       - application
@@ -34,13 +35,11 @@ services:
     env_file:
     - env_variables/redis.env
     volumes:
-      - 'redis_data:/bitnami/redis/data'
+      - redis_data:/bitnami/redis/data
     networks:
       - application
 
 volumes:
-  node_modules:
-    driver: local
   mysql_data:
     driver: local
   redis_data:

@@ -1,10 +1,12 @@
-CONTAINER_NAME ?= shopping-cart-api_app_1
+APP_NAME ?= shopping-cart-api
+CONTAINER_NAME ?= ${APP_NAME}_app_1
 
 start_app:
-	docker compose up --build -d
+	docker compose build --no-cache
+	docker compose up -d
 
 stop_app:
-	docker compose stop
+	docker compose down
 
 watch_logs:
 	docker logs -f ${CONTAINER_NAME}

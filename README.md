@@ -57,12 +57,13 @@ A demo shopping cart application that allows a user to register with the API, br
 ---
 
 ## Requirements
- -  Install and set up [Docker Engine](https://docs.docker.com/desktop/).
+ -  Install and set up [Docker Desktop](https://docs.docker.com/desktop/)( >= 3.5.2)
 
-    Ensure you have `docker-cli` installed by running the following command -
+    Ensure `docker-cli` has been installed by running the following command -
     ```
     docker -v
     ```
+
 ---
 
 ## Local Setup Instructions using Docker
@@ -74,7 +75,7 @@ A demo shopping cart application that allows a user to register with the API, br
     ```
     cd shopping-cart-api
     ```
- -  Use the following command to start the required containers. To run the application in `production` mode, update the `NODE_ENV` value in the `docker-compose.yaml` file.
+ -  Use the following command to build and start the required containers. To run the application in `production` mode, update the `NODE_ENV` and `command` values for `app` in the `docker-compose.yaml` file.
     ```
     make start_app
     ```
@@ -91,6 +92,10 @@ A demo shopping cart application that allows a user to register with the API, br
     ```
     make watch_logs
     ```
+ -  Use the following command to stop and remove the containers.
+   ```
+   make stop_app
+   ```
 
 ---
 
@@ -98,7 +103,7 @@ A demo shopping cart application that allows a user to register with the API, br
 The app contains a Makefile which contains some useful commands:
 
 - `make start_app` - Start docker containers using docker compose
-- `make stop_app` - Stop docker containers using docker compose
+- `make stop_app` - Stop and remove docker containers using docker compose
 - `make watch_logs` - Follow the logs of the application container
 - `make seed_db` - Seed the database with initial dummy data
 - `make lint` - Run the code quality/linting tools on the application codebase
@@ -131,7 +136,7 @@ For more detailed documentation about each endpoint, navigate to [`http://localh
 ### User Routes
 | Routes                      | Description                   |
 | --------------------------- | ----------------------------- |
-| `POST /users/`              | Create a new user             |
+| `POST /users/`              | Create a user                 |
 | `POST /users/login/`        | Login user and get auth token |
 | `PATCH /users/:userId/`     | Update details of a user      |
 | `GET /users/:userId/`       | Get details of a user         |
@@ -140,18 +145,18 @@ For more detailed documentation about each endpoint, navigate to [`http://localh
 ### Cart Routes
 | Routes                                 | Description                             |
 | -------------------------------------- | --------------------------------------- |
-| `POST /carts/`                         | Create a new cart for a user            |
-| `POST /carts/:cartId/items/`           | Add a new item to the specified cart    |
+| `POST /carts/`                         | Create a cart for a user                |
+| `POST /carts/:cartId/items/`           | Add an item to a cart                   |
 | `PATCH /carts/:cartId/items/:itemId/`  | Update an item in a cart                |
-| `GET /carts/:cartId/items/`            | Get list of items in the specified cart |
+| `GET /carts/:cartId/items/`            | Get list of items in a cart             |
 | `DELETE /carts/:cartId/items/:itemId/` | Delete an item from a cart              |
 
 ---
 
 ## Things that can be improved
 * For simplicity of the demo application, endpoints for delete user, delete cart, clear full cart have not been implemented.
-* Currently only unit tests are done for service layer, ideally should be done for controller and model layer
-* Categories are currently stored as string, which should ideally be a table itself
-* The currently error handling solution for seperation of concerns between controller and services.
-* Service layer could be more SOLID
-* cache middleware - Depends on endpoints, current endpoints dont seem to really benefit of it(cache-hit would be low).
+* Currently only unit tests are done for service layer, ideally should be done for controller and model layer as well as integration testing.
+* Categories are currently stored as string, which should ideally be a model itself.
+* The error handling can be improved to have better seperation of concerns between controllers and services.
+* Service layer can be made more SOLID.
+* Add a cache middleware. The current endpoints would not benefit much from it (cache-hit would be low), could be added for read endpoints with high traffic.
